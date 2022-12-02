@@ -51,6 +51,14 @@ dependencies {
     //Sceneview
     implementation "io.github.sceneview:arsceneview:$sceneview_version"
 
+    //ARCore override (replaces SceneView version)
+    api "com.google.ar:core:$arcore_version"
+
+    // BoofCV
+    ["core","android"].each {
+        api "org.boofcv:boofcv-$it:$boof_version"
+    }
+
     //Required for Geospatial
     implementation "com.google.android.gms:play-services-location:$playservices_version"
 

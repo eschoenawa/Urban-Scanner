@@ -4,6 +4,8 @@ buildscript {
         nav_version = "2.5.3"
         secrets_version = "2.0.1"
         sceneview_version = "0.9.0"
+        boof_version = "0.41"
+        arcore_version = "1.34.0"
         playservices_version = "21.0.0"
     }
     repositories {
