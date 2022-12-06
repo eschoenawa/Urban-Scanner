@@ -1,30 +1,37 @@
 package de.eschoenawa.urbanscanner.scan
 
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.filament.Texture
+import androidx.lifecycle.lifecycleScope
 import com.google.ar.core.Config
 import com.google.ar.core.Earth
-import com.google.ar.core.exceptions.NotYetAvailableException
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentArScanBinding
+import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.helper.configureWindowForArFullscreen
 import de.eschoenawa.urbanscanner.helper.unconfigureWindowFromArFullscreen
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import io.github.sceneview.ar.arcore.ArFrame
 import io.github.sceneview.ar.arcore.LightEstimationMode
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ArScanFragment : Fragment() {
     private var _binding: FragmentArScanBinding? = null
     private val binding get() = _binding!!
 
+    //TODO configurable / set depending on current scan name
+    private var filename = "scan_no_date.xyz"
+
+    //TODO not in fragment
+    private var pointCount = 0L
+
     companion object {
-        //TODO configurable / set depending on current scan name
-        private const val FILENAME = "scan.xyz"
+        private const val FILE_PREFIX = "scan_"
+        private const val FILE_SUFFIX = ".xyz"
     }
 
     override fun onCreateView(
@@ -33,6 +40,9 @@ class ArScanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentArScanBinding.inflate(inflater, container, false)
+        val currentTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")
+        filename = "$FILE_PREFIX${currentTime.format(formatter)}$FILE_SUFFIX"
         return binding.root
     }
 
@@ -70,15 +80,22 @@ class ArScanFragment : Fragment() {
     }
 
     private fun processNewFrame(frame: ArFrame) {
+        TimingHelper.startTimer("processNewFrame")
         val earth = binding.sceneView.arSession?.earth
-        updateStatusText(earth)
-        val framePointCloud = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth)
+        updateGeospatialStatusText(earth)
+        val framePointCloud = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth, lifecycleScope)
         //TODO set as field since not changing
-        val filename = "${requireContext().getExternalFilesDir(null)?.absolutePath}/$FILENAME"
-        framePointCloud?.persistToFile(filename)
+        val fullFilename = "${requireContext().getExternalFilesDir(null)?.absolutePath}/$filename"
+        pointCount += framePointCloud?.persistToFile(fullFilename) ?: 0
+        TimingHelper.endTimer("processNewFrame")
+        if (framePointCloud != null) {
+            //TODO use string template
+            binding.tvScanStatus.text = "$pointCount\n${TimingHelper.getTimerInfo()}"
+        }
+        TimingHelper.reset()
     }
 
-    private fun updateStatusText(earth: Earth?) {
+    private fun updateGeospatialStatusText(earth: Earth?) {
         val cameraGeospatialPose = earth?.cameraGeospatialPose
         val poseText: String = cameraGeospatialPose?.let {
             resources.getString(
@@ -92,7 +109,7 @@ class ArScanFragment : Fragment() {
                 it.headingAccuracy
             )
         } ?: resources.getString(R.string.vps_unavailable)
-        binding.tvStatus.text = resources.getString(
+        binding.tvTrackingStatus.text = resources.getString(
             R.string.earth_state,
             earth?.earthState.toString(),
             earth?.trackingState.toString(),

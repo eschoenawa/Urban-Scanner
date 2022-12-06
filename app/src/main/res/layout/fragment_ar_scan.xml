@@ -12,12 +12,22 @@
         android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/tv_status"
+        android:id="@+id/tv_tracking_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#4D424242"
         android:textColor="#FFF"
         app:layout_constraintTop_toTopOf="@id/sceneView"
+        app:layout_constraintLeft_toLeftOf="@id/sceneView" />
+
+    <TextView
+        android:id="@+id/tv_scan_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#4D424242"
+        android:textColor="#FFF"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@id/sceneView"
         app:layout_constraintLeft_toLeftOf="@id/sceneView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
