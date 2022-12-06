@@ -30,7 +30,7 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
         //TODO make configurable
         private const val MAX_POINTS_PER_FRAME = 20000
         //TODO make configurable
-        private const val CONFIDENCE_CUTOFF = 0.1f
+        private const val CONFIDENCE_CUTOFF = 0.5f
 
         fun createPointCloudIfDataIsAvailable(arFrame: Frame, earth: Earth?, lifecycleCoroutineScope: LifecycleCoroutineScope): FramePointCloud? {
             TimingHelper.startTimer("prepareForPointCloud")
@@ -164,17 +164,16 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
 
     fun persistToFile(filename: String): Int {
         TimingHelper.startTimer("preparePersistToFile")
-        val stringBuilder = StringBuilder()
         var pointCount = 0
-        while (points.hasRemaining()) {
-            val point = FloatArray(FLOATS_PER_POINT) { points.get() }
-            if (point[CONFIDENCE_INDEX] == 0f) {
-                //If no confidence is set, ignore point
-                continue
-            }
-            with (stringBuilder) {
+        val fileString = buildString {
+            while (points.hasRemaining()) {
+                val point = FloatArray(FLOATS_PER_POINT) { points.get() }
+                if (point[CONFIDENCE_INDEX] == 0f) {
+                    //If no confidence is set, ignore point
+                    continue
+                }
+                pointCount++
                 point.forEachIndexed { index, datum ->
-                    pointCount++
                     append(datum)
                     if (index < FLOATS_PER_POINT - 1) {
                         append(",")
@@ -187,7 +186,7 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
         TimingHelper.endTimer("preparePersistToFile")
         TimingHelper.startTimer("persistToFile")
         FileWriter(filename, true).use { fw ->
-            fw.write(stringBuilder.toString())
+            fw.write(fileString)
         }
         TimingHelper.endTimer("persistToFile")
         return pointCount

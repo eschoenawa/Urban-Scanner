@@ -29,6 +29,9 @@ class ArScanFragment : Fragment() {
     //TODO not in fragment
     private var pointCount = 0L
 
+    //TODO in fragment?
+    private var recording = false
+
     companion object {
         private const val FILE_PREFIX = "scan_"
         private const val FILE_SUFFIX = ".xyz"
@@ -55,38 +58,38 @@ class ArScanFragment : Fragment() {
             depthEnabled = true
             focusMode = Config.FocusMode.AUTO
             //TODO configure session needed?
-            configureSession { session, config ->
-                // Enable Geospatial Mode & Depth API.
-                config.apply {
-                    geospatialMode = Config.GeospatialMode.ENABLED
-                    planeRenderer.isEnabled = false
-                    depthMode = Config.DepthMode.RAW_DEPTH_ONLY
-                    depthEnabled = true
-                }
-            }
             onArFrame = ::processNewFrame
             instructions.enabled = false
+        }
+
+        binding.recordFab.setOnClickListener {
+            recording = !recording
+            binding.recordFab.setImageResource(if (recording) R.drawable.ic_pause else R.drawable.ic_start_record)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        requireActivity().configureWindowForArFullscreen(binding.root)
+        //requireActivity().configureWindowForArFullscreen(binding.root)
     }
 
     override fun onPause() {
         super.onPause()
-        requireActivity().unconfigureWindowFromArFullscreen(binding.root)
+        //requireActivity().unconfigureWindowFromArFullscreen(binding.root)
     }
 
     private fun processNewFrame(frame: ArFrame) {
         TimingHelper.startTimer("processNewFrame")
+        TimingHelper.startTimer("updateUI1")
         val earth = binding.sceneView.arSession?.earth
         updateGeospatialStatusText(earth)
+        TimingHelper.endTimer("updateUI1")
         val framePointCloud = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth, lifecycleScope)
         //TODO set as field since not changing
         val fullFilename = "${requireContext().getExternalFilesDir(null)?.absolutePath}/$filename"
-        pointCount += framePointCloud?.persistToFile(fullFilename) ?: 0
+        if (recording) {
+            pointCount += framePointCloud?.persistToFile(fullFilename) ?: 0
+        }
         TimingHelper.endTimer("processNewFrame")
         if (framePointCloud != null) {
             //TODO use string template
@@ -96,24 +99,6 @@ class ArScanFragment : Fragment() {
     }
 
     private fun updateGeospatialStatusText(earth: Earth?) {
-        val cameraGeospatialPose = earth?.cameraGeospatialPose
-        val poseText: String = cameraGeospatialPose?.let {
-            resources.getString(
-                R.string.geospatial_pose,
-                it.latitude,
-                it.longitude,
-                it.horizontalAccuracy,
-                it.altitude,
-                it.verticalAccuracy,
-                it.heading,
-                it.headingAccuracy
-            )
-        } ?: resources.getString(R.string.vps_unavailable)
-        binding.tvTrackingStatus.text = resources.getString(
-            R.string.earth_state,
-            earth?.earthState.toString(),
-            earth?.trackingState.toString(),
-            poseText
-        )
+        binding.geospatialStatusView.update(earth)
     }
 }

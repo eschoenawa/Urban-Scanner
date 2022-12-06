@@ -11,14 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/tv_tracking_status"
+    <de.eschoenawa.urbanscanner.view.GeospatialStatusView
+        android:id="@+id/geospatial_status_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#4D424242"
-        android:textColor="#FFF"
-        app:layout_constraintTop_toTopOf="@id/sceneView"
-        app:layout_constraintLeft_toLeftOf="@id/sceneView" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/tv_scan_status"
@@ -27,7 +25,17 @@
         android:background="#4D424242"
         android:textColor="#FFF"
         android:typeface="monospace"
-        app:layout_constraintBottom_toBottomOf="@id/sceneView"
+        app:layout_constraintBottom_toTopOf="@id/record_fab"
         app:layout_constraintLeft_toLeftOf="@id/sceneView" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/record_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_start_record"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/iv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:background="@color/text_background"
+        android:src="@drawable/ic_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_location"
+        app:layout_constraintBottom_toBottomOf="@id/tv_location"/>
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:background="@color/text_background"
+        android:textColor="@color/text_font"
+        app:layout_constraintStart_toEndOf="@id/iv_location"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/geospatial_pose"/>
+
+    <ImageView
+        android:id="@+id/iv_earth_tracking_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_earth"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_location"/>
+
+    <TextView
+        android:id="@+id/tv_earth_tracking_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/text_background"
+        android:textColor="@color/text_font"
+        app:layout_constraintTop_toTopOf="@id/iv_earth_tracking_state"
+        app:layout_constraintBottom_toBottomOf="@id/iv_earth_tracking_state"
+        app:layout_constraintStart_toEndOf="@id/iv_earth_tracking_state"
+        tools:text="TRACKING"/>
+
+    <ImageView
+        android:id="@+id/iv_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_earth_tracking_state"/>
+
+    <TextView
+        android:id="@+id/tv_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/text_background"
+        android:textColor="@color/text_font"
+        app:layout_constraintTop_toTopOf="@id/iv_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/iv_horizontal"
+        app:layout_constraintStart_toEndOf="@id/iv_horizontal"
+        tools:text="0.00m"/>
+
+    <ImageView
+        android:id="@+id/iv_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_horizontal"/>
+
+    <TextView
+        android:id="@+id/tv_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/text_background"
+        android:textColor="@color/text_font"
+        app:layout_constraintTop_toTopOf="@id/iv_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/iv_vertical"
+        app:layout_constraintStart_toEndOf="@id/iv_vertical"
+        tools:text="0.00m"/>
+
+    <ImageView
+        android:id="@+id/iv_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_heading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_vertical"/>
+
+    <TextView
+        android:id="@+id/tv_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/text_background"
+        android:textColor="@color/text_font"
+        app:layout_constraintTop_toTopOf="@id/iv_heading"
+        app:layout_constraintBottom_toBottomOf="@id/iv_heading"
+        app:layout_constraintStart_toEndOf="@id/iv_heading"
+        tools:text="0.00m"/>
+    
+    
+</androidx.constraintlayout.widget.ConstraintLayout>
