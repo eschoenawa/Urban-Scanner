@@ -14,11 +14,14 @@ import java.io.FileWriter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import java.sql.Timestamp
 import kotlin.math.ceil
 import kotlin.math.sqrt
 
-class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Image, camera: Camera, earth: Earth, arFrame: Frame, lifecycleCoroutineScope: LifecycleCoroutineScope) {
+class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Image, camera: Camera, earth: Earth, arFrame: Frame, timestamp: Long) {
     var points: FloatBuffer
+    val timestamp: Long
+    //TODO expose point count & rejected point count?
 
     companion object {
         private const val TAG = "FPC"
@@ -32,40 +35,33 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
         //TODO make configurable
         private const val CONFIDENCE_CUTOFF = 0.5f
 
-        fun createPointCloudIfDataIsAvailable(arFrame: Frame, earth: Earth?, lifecycleCoroutineScope: LifecycleCoroutineScope): FramePointCloud? {
+        fun createPointCloudIfDataIsAvailable(arFrame: Frame, earth: Earth?, lastDepthTimestamp: Long): PointCloudResult {
             TimingHelper.startTimer("prepareForPointCloud")
             if (arFrame.camera.trackingState != TrackingState.TRACKING) {
-                Log.w(TAG, "Camera not tracking!")
-                return null
+                return PointCloudResult.CameraNotTrackingResult
             }
             if (earth?.trackingState != TrackingState.TRACKING) {
-                Log.w(TAG, "Earth not tracking or null!")
-                return null
+                return if (earth == null) PointCloudResult.EarthNullResult else PointCloudResult.EarthNotTrackingResult
             }
             if (earth.cameraGeospatialPose.horizontalAccuracy > EARTH_HORIZONTAL_ACCURACY_THRESHOLD) {
-                Log.w(TAG, "Horizontal accuracy not good enough!")
-                return null
+                return PointCloudResult.HorizontalAccuracyTooBadResult
             }
             try {
                 arFrame.acquireRawDepthImage16Bits().use { depthImage ->
-                    /*
-                    if (arFrame.timestamp != depthImage.timestamp) {
-                        Log.w(TAG, "Outdated depth data (FrameTime: ${arFrame.timestamp}; ImageTime: ${depthImage.timestamp})!")
-                        return null
+                    if (lastDepthTimestamp == depthImage.timestamp) {
+                        return PointCloudResult.OnlyReprojectedDataResult
                     }
-                     */
                     arFrame.acquireRawDepthConfidenceImage().use { confidenceImage ->
                         arFrame.acquireCameraImage().use { cameraImage ->
                             val cameraPoseMatrix = FloatArray(16)
                             arFrame.camera.pose.toMatrix(cameraPoseMatrix, 0)
                             TimingHelper.endTimer("prepareForPointCloud")
-                            return FramePointCloud(depthImage, confidenceImage, cameraImage, arFrame.camera, earth, arFrame, lifecycleCoroutineScope)
+                            return PointCloudResult.PointCloudGeneratedResult(FramePointCloud(depthImage, confidenceImage, cameraImage, arFrame.camera, earth, arFrame, depthImage.timestamp))
                         }
                     }
                 }
             } catch (e: NotYetAvailableException) {
-                Log.w(TAG, "Image(s) not yet available!", e)
-                return null
+                return PointCloudResult.ImagesNotAvailableResult
             }
         }
     }
@@ -73,6 +69,7 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
     //TODO refactor buffers to their own classes to allow convenience methods for pixel coordinate access etc.
     //TODO split into methods
     init {
+        this.timestamp = timestamp
         TimingHelper.startTimer("createBuffers")
         val cameraTextureIntrinsics = camera.textureIntrinsics
         val depthBuffer = depthImage.planes[0].buffer.createUsableBufferCopy().asShortBuffer()
@@ -208,5 +205,15 @@ class FramePointCloud(depthImage: Image, confidenceImage: Image, cameraImage: Im
 
     private fun Short.isValidDepthData(): Boolean {
         return this != 0.toShort()
+    }
+
+    sealed interface PointCloudResult {
+        object CameraNotTrackingResult: PointCloudResult
+        object EarthNullResult: PointCloudResult
+        object EarthNotTrackingResult: PointCloudResult
+        object HorizontalAccuracyTooBadResult: PointCloudResult
+        object OnlyReprojectedDataResult: PointCloudResult
+        object ImagesNotAvailableResult: PointCloudResult
+        class PointCloudGeneratedResult(val framePointCloud: FramePointCloud): PointCloudResult
     }
 }

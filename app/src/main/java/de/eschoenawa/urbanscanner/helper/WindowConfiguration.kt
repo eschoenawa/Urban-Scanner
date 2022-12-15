@@ -7,6 +7,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
+//TODO remove these if not needed
+
 fun Activity.configureWindowForArFullscreen(rootView: View) {
     with(window) {
         addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

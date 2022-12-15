@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Earth
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentArScanBinding
 import de.eschoenawa.urbanscanner.helper.TimingHelper
-import de.eschoenawa.urbanscanner.helper.configureWindowForArFullscreen
-import de.eschoenawa.urbanscanner.helper.unconfigureWindowFromArFullscreen
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import io.github.sceneview.ar.arcore.ArFrame
 import io.github.sceneview.ar.arcore.LightEstimationMode
@@ -31,6 +29,13 @@ class ArScanFragment : Fragment() {
 
     //TODO in fragment?
     private var recording = false
+
+    //TODO move to new processing class
+    private var lastDepthTimestamp = 0L
+
+    //TODO in fragment?
+    private var shouldCreateAnchor = false
+    private var geoAnchor: Anchor? = null
 
     companion object {
         private const val FILE_PREFIX = "scan_"
@@ -60,22 +65,17 @@ class ArScanFragment : Fragment() {
             //TODO configure session needed?
             onArFrame = ::processNewFrame
             instructions.enabled = false
+            planeRenderer.isEnabled = false
         }
 
-        binding.recordFab.setOnClickListener {
-            recording = !recording
-            binding.recordFab.setImageResource(if (recording) R.drawable.ic_pause else R.drawable.ic_start_record)
+        binding.scanFab.setOnClickListener {
+            if (geoAnchor == null && !shouldCreateAnchor) {
+                shouldCreateAnchor = true
+            } else {
+                recording = !recording
+                binding.scanFab.setImageResource(if (recording) R.drawable.ic_pause else R.drawable.ic_start_record)
+            }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //requireActivity().configureWindowForArFullscreen(binding.root)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //requireActivity().unconfigureWindowFromArFullscreen(binding.root)
     }
 
     private fun processNewFrame(frame: ArFrame) {
@@ -84,18 +84,27 @@ class ArScanFragment : Fragment() {
         val earth = binding.sceneView.arSession?.earth
         updateGeospatialStatusText(earth)
         TimingHelper.endTimer("updateUI1")
-        val framePointCloud = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth, lifecycleScope)
-        //TODO set as field since not changing
-        val fullFilename = "${requireContext().getExternalFilesDir(null)?.absolutePath}/$filename"
-        if (recording) {
-            pointCount += framePointCloud?.persistToFile(fullFilename) ?: 0
+        if (shouldCreateAnchor && earth != null) {
+            val cameraPose = earth.cameraGeospatialPose
+            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, cameraPose.eastUpSouthQuaternion)
+            shouldCreateAnchor = false
+            binding.scanFab.setImageResource(R.drawable.ic_start_record)
         }
+        val pointCloudResult = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth, lastDepthTimestamp)
         TimingHelper.endTimer("processNewFrame")
-        if (framePointCloud != null) {
+        if (pointCloudResult is FramePointCloud.PointCloudResult.PointCloudGeneratedResult) {
+            val pointCloud = pointCloudResult.framePointCloud
+            lastDepthTimestamp = pointCloud.timestamp
+            //TODO set as field since not changing
+            val fullFilename = "${requireContext().getExternalFilesDir(null)?.absolutePath}/$filename"
+            if (recording) {
+                pointCount += pointCloud.persistToFile(fullFilename)
+            }
             //TODO use string template
-            binding.tvScanStatus.text = "$pointCount\n${TimingHelper.getTimerInfo()}"
+            binding.tvScanStatus.text = TimingHelper.getTimerInfo()
+            TimingHelper.reset()
         }
-        TimingHelper.reset()
+        binding.pointCloudStatusView.update(pointCloudResult, pointCount)
     }
 
     private fun updateGeospatialStatusText(earth: Earth?) {
