@@ -5,4 +5,13 @@
     <string name="vps_unavailable">VPS is not available at this time!</string>
     <string name="meter_value">%.2fm</string>
     <string name="degree_value">%.1f°</string>
+    <string name="depth_status_ok">Scanning</string>
+    <string name="depth_status_warn">No Scan within last second</string>
+    <string name="depth_status_with_error">No Scan: %s</string>
+    <string name="no_scans_hint">No scans created yet.\nClick the button below to create the first one.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="scan_details">Name: %s\nConfidence Cutoff: %.2f\nMax. Points per frame: %d\nDepth limit: %.2fm\nStore VPS points: %s\nGeoreference: %s%s</string>
+    <string name="scan_georeference_details">\n\tHorizontal accuracy: %.2fm\n\tVertical accuracy: %.2fm\n\tHeading accuracy: %.1f°\n\tEPSG-Code: %s</string>
+    <string name="scan_data_details">Scan started: %s</string>
 </resources>

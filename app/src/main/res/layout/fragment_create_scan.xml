@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".createscan.CreateScanFragment">
+
+    <!-- TODO extract strings to strings.xml -->
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan name:"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/edit_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tv_name"
+        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_name"/>
+
+    <TextView
+        android:id="@+id/tv_store_vps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Store VPS points:"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"/>
+
+    <CheckBox
+        android:id="@+id/checkbox_store_vps"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tv_store_vps"
+        app:layout_constraintStart_toEndOf="@id/tv_store_vps"
+        app:layout_constraintBottom_toBottomOf="@id/tv_store_vps"/>
+
+    <TextView
+        android:id="@+id/tv_georeference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Georeference:"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_store_vps"/>
+
+    <CheckBox
+        android:id="@+id/checkbox_georeference"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tv_georeference"
+        app:layout_constraintStart_toEndOf="@id/tv_georeference"
+        app:layout_constraintBottom_toBottomOf="@id/tv_georeference"/>
+
+    <TextView
+        android:id="@+id/tv_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Horizontal accuracy:"
+        android:paddingVertical="16dp"
+        android:paddingStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_georeference"/>
+
+    <EditText
+        android:id="@+id/edit_horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/tv_horizontal"
+        app:layout_constraintStart_toEndOf="@id/tv_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_horizontal"/>
+
+    <TextView
+        android:id="@+id/tv_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vertical accuracy:"
+        android:paddingVertical="16dp"
+        android:paddingStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_horizontal"/>
+
+    <EditText
+        android:id="@+id/edit_vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/tv_vertical"
+        app:layout_constraintStart_toEndOf="@id/tv_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_vertical"/>
+
+    <TextView
+        android:id="@+id/tv_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heading accuracy:"
+        android:paddingVertical="16dp"
+        android:paddingStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_vertical"/>
+
+    <EditText
+        android:id="@+id/edit_heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/tv_heading"
+        app:layout_constraintStart_toEndOf="@id/tv_heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_heading"/>
+
+    <TextView
+        android:id="@+id/tv_confidence_cutoff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confidence cutoff:"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_heading"/>
+
+    <EditText
+        android:id="@+id/edit_confidence_cutoff"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/tv_confidence_cutoff"
+        app:layout_constraintStart_toEndOf="@id/tv_confidence_cutoff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_confidence_cutoff"/>
+
+    <TextView
+        android:id="@+id/tv_max_points_per_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Max. points per frame:"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_confidence_cutoff"/>
+
+    <EditText
+        android:id="@+id/edit_max_points_per_frame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        app:layout_constraintTop_toTopOf="@id/tv_max_points_per_frame"
+        app:layout_constraintStart_toEndOf="@id/tv_max_points_per_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_max_points_per_frame"/>
+
+    <TextView
+        android:id="@+id/tv_depth_limit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Depth limit (meter):"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_max_points_per_frame"/>
+
+    <EditText
+        android:id="@+id/edit_depth_limit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/tv_depth_limit"
+        app:layout_constraintStart_toEndOf="@id/tv_depth_limit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_depth_limit"/>
+
+    <TextView
+        android:id="@+id/tv_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/error"
+        android:paddingVertical="16dp"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_depth_limit"
+        tools:text="Please enter a name!" />
+
+    <Button
+        android:id="@+id/btn_create_scan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

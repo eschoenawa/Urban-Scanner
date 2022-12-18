@@ -59,8 +59,17 @@ dependencies {
         api "org.boofcv:boofcv-$it:$boof_version"
     }
 
+    // CTS
+    implementation "org.orbisgis:cts:$cts_version"
+
+    // Gson
+    implementation "com.google.code.gson:gson:$gson_version"
+
     //Required for Geospatial
     implementation "com.google.android.gms:play-services-location:$playservices_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
 
     // Testing Defaults
     testImplementation 'junit:junit:4.13.2'
