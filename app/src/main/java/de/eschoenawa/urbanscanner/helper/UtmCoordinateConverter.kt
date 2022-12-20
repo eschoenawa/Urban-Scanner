@@ -1,6 +1,5 @@
 package de.eschoenawa.urbanscanner.helper
 
-import de.eschoenawa.urbanscanner.createscan.CreateScanFragment
 import org.cts.CRSFactory
 import org.cts.crs.CoordinateReferenceSystem
 import org.cts.crs.GeodeticCRS

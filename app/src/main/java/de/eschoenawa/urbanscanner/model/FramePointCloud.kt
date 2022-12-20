@@ -16,6 +16,7 @@ import org.cts.util.UTMUtils
 import java.io.FileWriter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.DoubleBuffer
 import java.nio.FloatBuffer
 import kotlin.math.ceil
 import kotlin.math.sqrt
@@ -31,6 +32,7 @@ class FramePointCloud(
     scan: Scan
 ) {
     var points: FloatBuffer
+    var pointCoordinates: DoubleBuffer
     val timestamp: Long
     //TODO expose point count & rejected point count?
 
@@ -41,6 +43,7 @@ class FramePointCloud(
 
         //TODO add RGB, Position & Height accuracy, (Calculated Position accuracy (Angle & distance & starting inaccuracy))
         private const val FLOATS_PER_POINT = 7  // X, Y, Z, r, g, b, confidence
+        private const val DOUBLES_PER_GEOREFERENCED_POINT = 3 // lat, alt, long
         private const val CONFIDENCE_INDEX = 6  // Index of confidence value in float array of point
 
         fun createPointCloudIfDataIsAvailable(
@@ -111,11 +114,12 @@ class FramePointCloud(
             DepthCameraIntrinsics.scaleTextureIntrinsicsToDepthImageDimensions(
                 cameraTextureIntrinsics, depthImage
             )
-        TimingHelper.endTimer("createBuffers")
         val step =
             ceil(sqrt((depthImage.width * depthImage.height / scan.maxPointsPerFrame.toFloat()))).toInt()
         points =
             FloatBuffer.allocate(depthImage.width / step * depthImage.height / step * FLOATS_PER_POINT)
+        pointCoordinates = DoubleBuffer.allocate(depthImage.width / step * depthImage.height / step * DOUBLES_PER_GEOREFERENCED_POINT)
+        TimingHelper.endTimer("createBuffers")
         TimingHelper.startTimer("convertImage")
         val boofImg =
             ImageType.pl(3, GrayU8::class.java).createImage(cameraImage.width, cameraImage.height)
@@ -187,19 +191,6 @@ class FramePointCloud(
                     depthMeters = depthMeters
                 )
                 TimingHelper.endTimer("calculateWorldPoints")
-                if (scan.isGeoReferenced) {
-                    if (earth == null) throw IllegalStateException("Earth cannot be null when georeferencing!")
-                    TimingHelper.startTimer("calculateLatLongCoordinates")
-                    val worldPose = Pose.makeTranslation(worldPoint)
-                    val geospatialWorldPose = earth.getGeospatialPose(worldPose)
-                    TimingHelper.endTimer("calculateLatLongCoordinates")
-                    TimingHelper.startTimer("calculateUtmCoordinates")
-                    val utmPosition = geospatialWorldPose.toUtm(scan)
-                    worldPoint[0] = utmPosition[0]
-                    worldPoint[1] = utmPosition[1]
-                    worldPoint[2] = utmPosition[2]
-                    TimingHelper.endTimer("calculateUtmCoordinates")
-                }
                 //TODO store VPS points (do refactor to some form of processor first)
                 TimingHelper.startTimer("putInPointsBuffer")
                 points.apply {
@@ -212,17 +203,31 @@ class FramePointCloud(
                     put(normalizedDepthConfidence)
                 }
                 TimingHelper.endTimer("putInPointsBuffer")
+                if (scan.isGeoReferenced) {
+                    if (earth == null) throw IllegalStateException("Earth cannot be null when georeferencing!")
+                    TimingHelper.startTimer("calculateLatLongCoordinates")
+                    val worldPose = Pose.makeTranslation(worldPoint)
+                    val geospatialWorldPose = earth.getGeospatialPose(worldPose)
+                    pointCoordinates.apply {
+                        put(geospatialWorldPose.latitude)
+                        put(geospatialWorldPose.altitude)
+                        put(geospatialWorldPose.longitude)
+                    }
+                    TimingHelper.endTimer("calculateLatLongCoordinates")
+                }
             }
         }
         points.rewind()
+        pointCoordinates.rewind()
     }
 
-    fun persistToFile(filename: String): Int {
+    fun persistToFile(filename: String, scan: Scan): Int {
         TimingHelper.startTimer("preparePersistToFile")
         var pointCount = 0
         val fileString = buildString {
             while (points.hasRemaining()) {
                 val point = FloatArray(FLOATS_PER_POINT) { points.get() }
+                val coordinates = DoubleArray(DOUBLES_PER_GEOREFERENCED_POINT) { pointCoordinates.get() }
                 if (point[CONFIDENCE_INDEX] == 0f) {
                     //If no confidence is set, ignore point
                     continue
@@ -233,6 +238,15 @@ class FramePointCloud(
                     if (index < FLOATS_PER_POINT - 1) {
                         append(",")
                     } else {
+                        if (scan.isGeoReferenced) {
+                            append(",")
+                            coordinates.forEachIndexed { coordinateIndex, coordinate ->
+                                append(String.format("%.7f", coordinate))
+                                if (coordinateIndex < DOUBLES_PER_GEOREFERENCED_POINT - 1) {
+                                    append(",")
+                                }
+                            }
+                        }
                         append("\n")
                     }
                 }
@@ -265,6 +279,7 @@ class FramePointCloud(
         return this != 0.toShort()
     }
 
+    //TODO move to post-processor
     private fun GeospatialPose.toUtm(scan: Scan): FloatArray {
         if (coordinateConverter == null) {
             coordinateConverter = if (scan.epsgCode.isEmpty()) {

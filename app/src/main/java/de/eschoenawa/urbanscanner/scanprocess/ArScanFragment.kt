@@ -112,17 +112,20 @@ class ArScanFragment : Fragment() {
             val pointCloud = pointCloudResult.framePointCloud
             lastDepthTimestamp = pointCloud.timestamp
 
+            //TODO move to utm post processing
+            /*
             pointCloud.coordinateConverter?.let { coordinateConverter ->
                 if (scan.epsgCode.isEmpty()) {
                     scan.epsgCode = coordinateConverter.targetEpsgCode
                     scanRepository.persistScan(requireContext(), scan)
                 }
             }
+             */
 
             //TODO set as field since not changing
             val fullFilename = scanRepository.getRawDataFilePath(requireContext(), scan)
             if (recording) {
-                pointCount += pointCloud.persistToFile(fullFilename)
+                pointCount += pointCloud.persistToFile(fullFilename, scan)
             }
             //TODO use string template
             binding.tvScanStatus.text = TimingHelper.getTimerInfo()
