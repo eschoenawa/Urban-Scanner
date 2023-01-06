@@ -40,7 +40,6 @@ class ScanDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO gracefully handle crash
         scan = scanName?.let { scanRepository.getScan(requireContext(), it) }
             ?: throw IllegalArgumentException("No scan name provided!")
         initButtons()
@@ -69,14 +68,13 @@ class ScanDetailFragment : Fragment() {
         with(binding) {
             val storeVpsString = getStringForBoolean(scan.storeVpsPoints)
             val georeferenceString = getStringForBoolean(scan.isGeoReferenced)
-            //TODO extract (Auto) to strings.xml
             val georeferenceDetailsString = if (scan.isGeoReferenced) {
                 getString(
                     R.string.scan_georeference_details,
                     scan.horizontalAccuracyThreshold,
                     scan.verticalAccuracyThreshold,
                     scan.headingAccuracyThreshold,
-                    scan.epsgCode.ifEmpty { "(Auto)" }
+                    scan.epsgCode.ifEmpty { getString(R.string.auto_epsg) }
                 )
             } else ""
             tvScanDetails.text = getString(

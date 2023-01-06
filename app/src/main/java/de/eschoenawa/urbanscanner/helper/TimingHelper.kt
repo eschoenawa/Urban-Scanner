@@ -19,6 +19,13 @@ object TimingHelper {
         timer.finish()
     }
 
+    fun <T> withTimer(name: String, block: () -> T): T {
+        startTimer(name)
+        val result = block.invoke()
+        endTimer(name)
+        return result
+    }
+
     fun getTimerInfo(): String {
         val stringBuilder = StringBuilder()
         timingsMap.entries.forEach {entry ->
@@ -47,7 +54,7 @@ object TimingHelper {
         timingsMap.clear()
     }
 
-    class Timer() {
+    class Timer {
         var isFinished: Boolean
             private set
         private var startTimestamp: Long

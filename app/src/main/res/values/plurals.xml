@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="point_count">
+        <item quantity="one">%d point recorded</item>
+        <item quantity="other">%d points recorded</item>
+    </plurals>
+</resources>

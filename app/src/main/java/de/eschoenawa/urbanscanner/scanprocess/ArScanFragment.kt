@@ -15,26 +15,18 @@ import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.Scan
-import de.eschoenawa.urbanscanner.scandetails.ScanDetailFragment
 import io.github.sceneview.ar.arcore.ArFrame
 import io.github.sceneview.ar.arcore.LightEstimationMode
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class ArScanFragment : Fragment() {
     private var _binding: FragmentArScanBinding? = null
     private val binding get() = _binding!!
 
-    //TODO not in fragment
-    private var pointCount = 0L
-
     //TODO in fragment?
     private var recording = false
 
-    //TODO move to new processing class
-    private var lastDepthTimestamp = 0L
+    private lateinit var frameProcessor: FrameProcessor
 
-    //TODO in fragment?
     private var shouldCreateAnchor = false
     private var geoAnchor: Anchor? = null
 
@@ -64,9 +56,9 @@ class ArScanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO gracefully handle crash
         scan = scanName?.let { scanRepository.getScan(requireContext(), it) }
             ?: throw IllegalArgumentException("No scan name provided!")
+        frameProcessor = FrameProcessor(scan)
         initGeospatialStatusView()
         with(binding.sceneView) {
             lightEstimationMode = LightEstimationMode.AMBIENT_INTENSITY
@@ -95,43 +87,18 @@ class ArScanFragment : Fragment() {
     }
 
     private fun processNewFrame(frame: ArFrame) {
-        TimingHelper.startTimer("processNewFrame")
-        TimingHelper.startTimer("updateUI1")
-        val earth = binding.sceneView.arSession?.earth
-        updateGeospatialStatusText(earth)
-        TimingHelper.endTimer("updateUI1")
-        if (shouldCreateAnchor && earth != null) {
-            val cameraPose = earth.cameraGeospatialPose
-            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, cameraPose.eastUpSouthQuaternion)
-            shouldCreateAnchor = false
-            binding.scanFab.setImageResource(R.drawable.ic_start_record)
-        }
-        val pointCloudResult = FramePointCloud.createPointCloudIfDataIsAvailable(frame.frame, earth, lastDepthTimestamp, scan)
-        TimingHelper.endTimer("processNewFrame")
-        if (pointCloudResult is FramePointCloud.PointCloudResult.PointCloudGeneratedResult) {
-            val pointCloud = pointCloudResult.framePointCloud
-            lastDepthTimestamp = pointCloud.timestamp
-
-            //TODO move to utm post processing
-            /*
-            pointCloud.coordinateConverter?.let { coordinateConverter ->
-                if (scan.epsgCode.isEmpty()) {
-                    scan.epsgCode = coordinateConverter.targetEpsgCode
-                    scanRepository.persistScan(requireContext(), scan)
-                }
+        val pointCloud = TimingHelper.withTimer("processNewFrame") {
+            val earth = binding.sceneView.arSession?.earth
+            TimingHelper.withTimer("updateGeoUI") {
+                updateGeospatialStatusText(earth)
             }
-             */
+            createAnchorIfApplicable(earth)
 
-            //TODO set as field since not changing
-            val fullFilename = scanRepository.getRawDataFilePath(requireContext(), scan)
-            if (recording) {
-                pointCount += pointCloud.persistToFile(fullFilename, scan)
-            }
-            //TODO use string template
-            binding.tvScanStatus.text = TimingHelper.getTimerInfo()
-            TimingHelper.reset()
+            frameProcessor.processFrame(frame.frame, earth)
         }
-        binding.pointCloudStatusView.update(pointCloudResult, pointCount)
+
+        persistPointCloudIfRecording(pointCloud)
+        updateUIAfterProcessing(pointCloud)
     }
 
     private fun updateGeospatialStatusText(earth: Earth?) {
@@ -141,10 +108,35 @@ class ArScanFragment : Fragment() {
     private fun initGeospatialStatusView() {
         with(binding.geospatialStatusView) {
             isVisible = scan.isGeoReferenced
-            //TODO add a yellow state?
             setHorizontalAccuracyThresholds(DoubleArray(2) { scan.horizontalAccuracyThreshold.toDouble() })
             setVerticalAccuracyThresholds(DoubleArray(2) { scan.verticalAccuracyThreshold.toDouble() })
             setHeadingAccuracyThresholds(DoubleArray(2) { scan.headingAccuracyThreshold.toDouble() })
         }
+    }
+
+    private fun createAnchorIfApplicable(earth: Earth?) {
+        if (shouldCreateAnchor && earth != null) {
+            val cameraPose = earth.cameraGeospatialPose
+            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, cameraPose.eastUpSouthQuaternion)
+            shouldCreateAnchor = false
+            binding.scanFab.setImageResource(R.drawable.ic_start_record)
+        }
+    }
+
+    private fun persistPointCloudIfRecording(nullablePointCloud: FramePointCloud?) {
+        nullablePointCloud?.let { pointCloud ->
+            if (recording) {
+                scanRepository.persistRawData(requireContext(), scan, pointCloud)
+            }
+        }
+    }
+
+    private fun updateUIAfterProcessing(pointCloud: FramePointCloud?) {
+        if (pointCloud != null) {
+            //TODO use string template
+            binding.tvScanStatus.text = TimingHelper.getTimerInfo()
+        }
+        TimingHelper.reset()
+        binding.pointCloudStatusView.update(pointCloud != null, frameProcessor.totalPointCount)
     }
 }

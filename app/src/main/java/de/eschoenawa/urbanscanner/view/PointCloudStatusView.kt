@@ -8,7 +8,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.ViewPointCloudStatusBinding
-import de.eschoenawa.urbanscanner.model.FramePointCloud
 
 class PointCloudStatusView @JvmOverloads constructor(
     context: Context,
@@ -23,12 +22,11 @@ class PointCloudStatusView @JvmOverloads constructor(
         binding = ViewPointCloudStatusBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
-    fun update(result: FramePointCloud.PointCloudResult, pointCount: Long) {
-        if (result is FramePointCloud.PointCloudResult.PointCloudGeneratedResult) {
+    fun update(newPointsGenerated: Boolean, pointCount: Long) {
+        if (newPointsGenerated) {
             lastPointCloudSystemTimestamp = System.currentTimeMillis()
 
-            //TODO use string template
-            binding.tvPointCount.text = pointCount.toString()
+            binding.tvPointCount.text = context.resources.getQuantityString(R.plurals.point_count, pointCount.toInt(), pointCount)
         }
         val delta = System.currentTimeMillis() - lastPointCloudSystemTimestamp
         with(binding) {
@@ -43,10 +41,8 @@ class PointCloudStatusView @JvmOverloads constructor(
             } else if (delta <= 2_000L) {
                 context.getString(R.string.depth_status_warn)
             } else {
-                //TODO don't use classnames
                 context.getString(
-                    R.string.depth_status_with_error,
-                    result::class.simpleName
+                    R.string.depth_status
                 )
             }
         }

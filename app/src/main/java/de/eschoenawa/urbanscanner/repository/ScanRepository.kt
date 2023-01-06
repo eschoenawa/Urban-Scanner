@@ -1,6 +1,8 @@
 package de.eschoenawa.urbanscanner.repository
 
 import android.content.Context
+import de.eschoenawa.urbanscanner.helper.TimingHelper
+import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.Scan
 import java.io.File
 import java.io.FileReader
@@ -50,8 +52,16 @@ class ScanRepository {
         return file.exists() && file.isFile
     }
 
-    fun getRawDataFilePath(context: Context, scan: Scan): String {
-        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$RAW_DATA_FILE"
+    fun persistRawData(context: Context, scan: Scan, framePointCloud: FramePointCloud) {
+        val fullFilename = getRawDataFilePath(context, scan)
+        val fileString = TimingHelper.withTimer("preparePersist") {
+            framePointCloud.generateFileString()
+        }
+        TimingHelper.withTimer("persist") {
+            FileWriter(fullFilename, true).use { fw ->
+                fw.write(fileString)
+            }
+        }
     }
 
     private fun loadFromName(context: Context, name: String): Scan {
@@ -78,5 +88,9 @@ class ScanRepository {
             }
         }
         file.delete()
+    }
+
+    private fun getRawDataFilePath(context: Context, scan: Scan): String {
+        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$RAW_DATA_FILE"
     }
 }

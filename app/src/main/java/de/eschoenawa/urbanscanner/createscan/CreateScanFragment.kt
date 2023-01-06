@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentCreateScanBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.model.Scan
@@ -60,7 +61,7 @@ class CreateScanFragment : Fragment() {
     private fun checkValues(): Boolean {
         with(binding) {
             if (editName.text.isBlank()) {
-                tvError.text = "Please enter a name"
+                tvError.text = getString(R.string.error_no_name)
                 return false
             }
             if (checkboxGeoreference.isChecked) {
@@ -68,10 +69,10 @@ class CreateScanFragment : Fragment() {
                 val vertical = editVertical.text.toString().toFloatOrNull()
                 val heading = editVertical.text.toString().toFloatOrNull()
                 if (horizontal == null || vertical == null || heading == null) {
-                    tvError.text = "Enter valid accuracy values (Float)"
+                    tvError.text = getString(R.string.error_no_accuracy)
                     return false
                 } else if (horizontal <= 0 || vertical <= 0 || heading <= 0) {
-                    tvError.text = "Accuracy values have to be > 0"
+                    tvError.text = getString(R.string.error_negative_accuracy)
                     return false
                 }
             } else {
@@ -81,15 +82,15 @@ class CreateScanFragment : Fragment() {
             val pointsPerFrame = editMaxPointsPerFrame.text.toString().toIntOrNull()
             val depthLimit = editDepthLimit.text.toString().toFloatOrNull()
             if (confidence == null || confidence < 0 || confidence > 1) {
-                tvError.text = "Provide a valid confidence cutoff (0 <= cutoff <= 1)!"
+                tvError.text = getString(R.string.error_invalid_confidence_cutoff)
                 return false
             }
             if (pointsPerFrame == null || pointsPerFrame < 0) {
-                tvError.text = "Provide a valid number of points per frame!"
+                tvError.text = getString(R.string.error_invalid_points_per_frame)
                 return false
             }
             if (depthLimit == null || depthLimit < 0 || depthLimit > 65) {
-                tvError.text = "Provide a valid depth limit between 0 and 65!"
+                tvError.text = getString(R.string.error_invalid_depth_limit)
                 return false
             }
             return true
@@ -100,7 +101,7 @@ class CreateScanFragment : Fragment() {
         //TODO provide selection of EPSG?
         with(binding) {
             return Scan(
-                name = editName.text.toString(),
+                name = editName.text.toString().trim(),
                 storeVpsPoints = checkboxStoreVps.isChecked,
                 isGeoReferenced = checkboxGeoreference.isChecked,
                 horizontalAccuracyThreshold = editHorizontal.text.toString().toFloat(),

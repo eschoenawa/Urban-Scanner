@@ -64,10 +64,9 @@ class GeospatialStatusView @JvmOverloads constructor(
             }
             with(binding) {
                 ivEarthTrackingState.setColorFilter(ContextCompat.getColor(context, trackingStateColor))
-                //TODO use string template
                 tvEarthTrackingState.text = when (earth.trackingState) {
                     TrackingState.TRACKING -> earth.trackingState.toString()
-                    else -> "Earth: ${earth.earthState}; Tracking: ${earth.trackingState}"
+                    else -> context.getString(R.string.geospatial_unavailable_status, earth.earthState, earth.trackingState)
                 }
                 ivHorizontal.setColorFilter(ContextCompat.getColor(context, horizontalColor))
                 ivVertical.setColorFilter(ContextCompat.getColor(context, verticalColor))
@@ -82,7 +81,7 @@ class GeospatialStatusView @JvmOverloads constructor(
                         R.color.error
                     )
                 )
-                tvEarthTrackingState.text = "Earth is null"
+                tvEarthTrackingState.text = context.getString(R.string.geospatial_earth_null_status)
             }
         }
     }

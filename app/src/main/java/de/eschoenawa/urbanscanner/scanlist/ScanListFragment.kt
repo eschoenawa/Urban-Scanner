@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentScanListBinding
 import de.eschoenawa.urbanscanner.model.Scan
 
@@ -17,8 +18,6 @@ class ScanListFragment : Fragment() {
 
     companion object {
         private const val TAG = "ScanListFragment"
-
-        fun newInstance() = ScanListFragment()
     }
 
     private var _binding: FragmentScanListBinding? = null
@@ -71,15 +70,14 @@ class ScanListFragment : Fragment() {
 
     private fun onScanLongClicked(scan: Scan) {
         Log.d(TAG, "Long-clicked scan ${scan.name}")
-        //TODO use string resources
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete ${scan.name}?")
-            .setMessage("Do you want to delete the scan ${scan.name}?")
-            .setPositiveButton("Delete") {_, _ ->
+            .setTitle(getString(R.string.delete_title, scan.name))
+            .setMessage(getString(R.string.delete_message, scan.name))
+            .setPositiveButton(getString(R.string.delete_action)) { _, _ ->
                 viewModel.deleteScan(requireContext(), scan)
                 viewModel.loadScans(requireContext())
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.delete_cancel), null)
             .show()
     }
 

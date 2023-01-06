@@ -1,17 +1,39 @@
 <resources>
     <string name="app_name">Urban Scanner</string>
     <string name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\nALTITUDE: %.2fm\nHEADING: %.1f˚</string>
-    <string name="earth_state">EarthState: %1$s\nTrackingState: %2$s\n%3$s</string>
-    <string name="vps_unavailable">VPS is not available at this time!</string>
+    <string name="geospatial_unavailable_status">Earth: %1$s; Tracking: %2$s</string>
+    <string name="geospatial_earth_null_status">Earth is null</string>
     <string name="meter_value">%.2fm</string>
     <string name="degree_value">%.1f°</string>
     <string name="depth_status_ok">Scanning</string>
     <string name="depth_status_warn">No Scan within last second</string>
-    <string name="depth_status_with_error">No Scan: %s</string>
+    <string name="depth_status">No Scan</string>
     <string name="no_scans_hint">No scans created yet.\nClick the button below to create the first one.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="scan_details">Name: %s\nConfidence Cutoff: %.2f\nMax. Points per frame: %d\nDepth limit: %.2fm\nStore VPS points: %s\nGeoreference: %s%s</string>
     <string name="scan_georeference_details">\n\tHorizontal accuracy: %.2fm\n\tVertical accuracy: %.2fm\n\tHeading accuracy: %.1f°\n\tEPSG-Code: %s</string>
     <string name="scan_data_details">Scan started: %s</string>
+    <string name="auto_epsg">(Auto)</string>
+    <string name="delete_title">Delete %s?</string>
+    <string name="delete_message">Do you want to delete the scan %s?</string>
+    <string name="delete_action">Delete</string>
+    <string name="delete_cancel">Cancel</string>
+    <string name="label_scan_name">Scan name:</string>
+    <string name="label_store_vps_points">Store VPS points:</string>
+    <string name="label_georeference">Georeference:</string>
+    <string name="label_horizontal_accuracy">Horizontal accuracy:</string>
+    <string name="label_vertical_accuracy">Vertical accuracy:</string>
+    <string name="label_heading_accuracy">Heading accuracy:</string>
+    <string name="label_confidence_cutoff">Confidence cutoff:</string>
+    <string name="label_max_points_per_frame">Max. points per frame:</string>
+    <string name="label_depth_limit_meter">Depth limit (meter):</string>
+    <string name="btn_create_scan">Create</string>
+    <string name="btn_scan">Scan</string>
+    <string name="error_no_name">Please enter a name</string>
+    <string name="error_no_accuracy">Enter valid accuracy values (Float)</string>
+    <string name="error_negative_accuracy"><![CDATA[Accuracy values have to be > 0]]></string>
+    <string name="error_invalid_confidence_cutoff"><![CDATA[Provide a valid confidence cutoff (0 <= cutoff <= 1)!]]></string>
+    <string name="error_invalid_points_per_frame">Provide a valid number of points per frame!</string>
+    <string name="error_invalid_depth_limit">Provide a valid depth limit between 0 and 65!</string>
 </resources>
