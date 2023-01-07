@@ -8,7 +8,7 @@ import org.cts.op.CoordinateOperationFactory
 import org.cts.registry.EPSGRegistry
 import org.cts.util.UTMUtils
 
-class UtmCoordinateConverter(targetEpsgCode: String) {
+class UtmCoordinateConverter(val targetEpsgCode: String) {
 
     private val crsFactory: CRSFactory = CRSFactory()
     private val sourceCrs: CoordinateReferenceSystem

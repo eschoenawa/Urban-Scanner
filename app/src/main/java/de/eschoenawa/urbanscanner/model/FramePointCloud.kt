@@ -12,11 +12,7 @@ class FramePointCloud(
             data.forEach { nullableData ->
                 nullableData?.let { pixelData ->
                     TimingHelper.startTimer("build")
-                    val line = if (pixelData.isGeoReferenced) {
-                        "${pixelData.x},${pixelData.y},${pixelData.z},${pixelData.normalizedConfidence},${pixelData.r.toInt()},${pixelData.g.toInt()},${pixelData.b.toInt()},${pixelData.latitude},${pixelData.longitude},${pixelData.altitude}"
-                    } else {
-                        "${pixelData.x},${pixelData.y},${pixelData.z},${pixelData.normalizedConfidence},${pixelData.r.toInt()},${pixelData.g.toInt()},${pixelData.b.toInt()}"
-                    }
+                    val line = pixelData.toString()
                     TimingHelper.endTimer("build")
                     TimingHelper.startTimer("append")
                     appendLine(line)

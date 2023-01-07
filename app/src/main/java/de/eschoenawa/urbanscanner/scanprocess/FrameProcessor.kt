@@ -18,8 +18,6 @@ class FrameProcessor(private val scan: Scan) {
     private val workArrays = GrowArray(::DogArray_I8)
     private var lastDepthTimestamp = 0L
 
-    var totalPointCount = 0L
-        private set
 
     fun processFrame(arFrame: Frame, earth: Earth?): FramePointCloud? {
         val preconditionsMet = withTimer("checkPreconditions") {
@@ -68,7 +66,6 @@ class FrameProcessor(private val scan: Scan) {
                                 }
                             }
                         }
-                        totalPointCount += resultPointCloud.pointCount
                         return resultPointCloud
                     }
                 }

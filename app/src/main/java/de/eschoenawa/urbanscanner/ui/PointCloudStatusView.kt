@@ -1,4 +1,4 @@
-package de.eschoenawa.urbanscanner.view
+package de.eschoenawa.urbanscanner.ui
 
 import android.content.Context
 import android.util.AttributeSet

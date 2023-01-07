@@ -3,6 +3,7 @@ package de.eschoenawa.urbanscanner.repository
 import android.content.Context
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.model.FramePointCloud
+import de.eschoenawa.urbanscanner.model.PixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import java.io.File
 import java.io.FileReader
@@ -13,6 +14,7 @@ import java.nio.file.Paths
 class ScanRepository {
     private companion object {
         private const val RAW_DATA_FILE = "raw.xyz"
+        private const val UTM_DATA_FILE = "utm.xyz"
         private const val META_DATA_FILE = "meta.json"
     }
 
@@ -21,7 +23,8 @@ class ScanRepository {
     }
 
     fun getAllScans(context: Context): List<Scan> {
-        val scansPath = context.getExternalFilesDir(null)?.absolutePath ?: throw IllegalStateException("Can't open files!")
+        val scansPath = context.getExternalFilesDir(null)?.absolutePath
+            ?: throw IllegalStateException("Can't open files!")
         val scansFolder = File(scansPath)
         val scans = emptyList<Scan>().toMutableList()
         scansFolder.listFiles()?.forEach { file ->
@@ -64,8 +67,36 @@ class ScanRepository {
         }
     }
 
+    /**
+     * This function allows processing the raw points sequentially and putting the new points in a
+     * target file.
+     */
+    suspend fun processRawData(
+        context: Context,
+        scan: Scan,
+        targetFilepath: String,
+        process: suspend (PixelData) -> PixelData
+    ) {
+        val rawFilename = getRawDataFilePath(context, scan)
+        FileWriter(targetFilepath).use { fw ->
+            File(rawFilename).useLines { lines ->
+                lines.forEach { line ->
+                    if (line.isNotBlank()) {
+                        fw.write(process(PixelData.fromString(line)).toString())
+                        fw.write("\n")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getUtmDataFilePath(context: Context, scan: Scan): String {
+        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$UTM_DATA_FILE"
+    }
+
     private fun loadFromName(context: Context, name: String): Scan {
-        val fullFilename = "${context.getExternalFilesDir(null)?.absolutePath}/$name/$META_DATA_FILE"
+        val fullFilename =
+            "${context.getExternalFilesDir(null)?.absolutePath}/$name/$META_DATA_FILE"
         val file = File(fullFilename)
         if (!file.exists() || !file.isFile) {
             throw IllegalArgumentException("Given name has no meta file!")

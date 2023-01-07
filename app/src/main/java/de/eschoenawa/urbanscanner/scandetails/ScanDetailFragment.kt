@@ -1,23 +1,20 @@
 package de.eschoenawa.urbanscanner.scandetails
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentScanDetailBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.model.Scan
+import de.eschoenawa.urbanscanner.postprocessing.PostProcessorInfo
+import de.eschoenawa.urbanscanner.postprocessing.PostProcessorRegistry
+import de.eschoenawa.urbanscanner.ui.BaseFragment
 
-class ScanDetailFragment : Fragment() {
-    private var scanName: String? = null
+class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
+    private lateinit var scanName: String
     private val scanRepository = DependencyProvider.getScanRepository()
     private lateinit var scan: Scan
-
-    private var _binding: FragmentScanDetailBinding? = null
-    private val binding get() = _binding!!
 
     companion object {
         private const val ARG_SCAN_NAME = "scanName"
@@ -26,29 +23,21 @@ class ScanDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            scanName = it.getString(ARG_SCAN_NAME)
+            scanName = it.getString(ARG_SCAN_NAME).orEmpty()
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentScanDetailBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        scan = scanName?.let { scanRepository.getScan(requireContext(), it) }
-            ?: throw IllegalArgumentException("No scan name provided!")
+        scan = scanRepository.getScan(requireContext(), scanName)
         initButtons()
-        setTexts()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        val rawDataExists = scanRepository.doesScanHaveRawData(requireContext(), scan)
+        if (!rawDataExists && scan.pointCount > 0) {
+            scan.pointCount = 0
+            scanRepository.persistScan(requireContext(), scan)
+        }
+        setTexts(rawDataExists)
+        setupPostProcessorButtons()
     }
 
     private fun initButtons() {
@@ -64,7 +53,7 @@ class ScanDetailFragment : Fragment() {
         }
     }
 
-    private fun setTexts() {
+    private fun setTexts(rawDataExists: Boolean) {
         with(binding) {
             val storeVpsString = getStringForBoolean(scan.storeVpsPoints)
             val georeferenceString = getStringForBoolean(scan.isGeoReferenced)
@@ -87,11 +76,23 @@ class ScanDetailFragment : Fragment() {
                 georeferenceString,
                 georeferenceDetailsString
             )
+
             tvScanDataDetails.text = getString(
                 R.string.scan_data_details,
-                getStringForBoolean(scanRepository.doesScanHaveRawData(requireContext(), scan))
+                getStringForBoolean(rawDataExists)
             )
+            tvScanRawPointCount.text = getString(R.string.scan_raw_point_count, scan.pointCount)
         }
+    }
+
+    private fun setupPostProcessorButtons() {
+        val adapter = PostProcessorListAdapter(scan, ::onPostProcessorClicked)
+        adapter.submitList(PostProcessorRegistry.postProcessorInfos)
+        binding.rvPostprocessors.adapter = adapter
+    }
+
+    private fun onPostProcessorClicked(postProcessorInfo: PostProcessorInfo) {
+        findNavController().navigate(ScanDetailFragmentDirections.actionScanDetailFragmentToPostProcessingFragment(scanName, postProcessorInfo.identifier))
     }
 
     private fun getStringForBoolean(value: Boolean): String {

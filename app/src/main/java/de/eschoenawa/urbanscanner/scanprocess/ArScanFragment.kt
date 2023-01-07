@@ -15,12 +15,11 @@ import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.Scan
+import de.eschoenawa.urbanscanner.ui.BaseFragment
 import io.github.sceneview.ar.arcore.ArFrame
 import io.github.sceneview.ar.arcore.LightEstimationMode
 
-class ArScanFragment : Fragment() {
-    private var _binding: FragmentArScanBinding? = null
-    private val binding get() = _binding!!
+class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
 
     //TODO in fragment?
     private var recording = false
@@ -43,15 +42,6 @@ class ArScanFragment : Fragment() {
         arguments?.let {
             scanName = it.getString(ARG_SCAN_NAME)
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentArScanBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,9 +71,14 @@ class ArScanFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        scanRepository.persistScan(requireContext(), scan)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        scanRepository.persistScan(requireContext(), scan)
     }
 
     private fun processNewFrame(frame: ArFrame) {
@@ -127,6 +122,7 @@ class ArScanFragment : Fragment() {
         nullablePointCloud?.let { pointCloud ->
             if (recording) {
                 scanRepository.persistRawData(requireContext(), scan, pointCloud)
+                scan.pointCount += pointCloud.pointCount
             }
         }
     }
@@ -137,6 +133,6 @@ class ArScanFragment : Fragment() {
             binding.tvScanStatus.text = TimingHelper.getTimerInfo()
         }
         TimingHelper.reset()
-        binding.pointCloudStatusView.update(pointCloud != null, frameProcessor.totalPointCount)
+        binding.pointCloudStatusView.update(pointCloud != null, scan.pointCount)
     }
 }

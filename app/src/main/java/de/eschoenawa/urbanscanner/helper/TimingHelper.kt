@@ -4,8 +4,6 @@ import android.util.Log
 
 object TimingHelper {
     private const val TAG = "Timings"
-    private const val FORMAT_TEMPLATE = "%4dms\t%s"
-    private const val UNFINISHED_FORMAT_TEMPLATE = "????ms\t%s (Not finished)"
     private val timingsMap = mutableMapOf<String, Timer>()
 
     fun startTimer(name: String) {
@@ -30,9 +28,9 @@ object TimingHelper {
         val stringBuilder = StringBuilder()
         timingsMap.entries.forEach {entry ->
             if (entry.value.isFinished) {
-                stringBuilder.appendLine(String.format(FORMAT_TEMPLATE, entry.value.getTotalTime(), entry.key))
+                stringBuilder.appendLine("${entry.value.getTotalTime().toFourDigitString()}ms\t${entry.key}")
             } else {
-                stringBuilder.appendLine(String.format(UNFINISHED_FORMAT_TEMPLATE, entry.key))
+                stringBuilder.appendLine("????ms\t${entry.key} (Not finished)")
             }
         }
         return stringBuilder.toString()
@@ -42,9 +40,9 @@ object TimingHelper {
         Log.d(TAG, "### Timers ###")
         timingsMap.entries.forEach {entry ->
             if (entry.value.isFinished) {
-                Log.d(TAG, String.format(FORMAT_TEMPLATE, entry.value.getTotalTime(), entry.key))
+                Log.d(TAG, "${entry.value.getTotalTime().toFourDigitString()}ms\t${entry.key}")
             } else {
-                Log.d(TAG, String.format(UNFINISHED_FORMAT_TEMPLATE, entry.key))
+                Log.d(TAG, "????ms\t${entry.key} (Not finished)")
             }
         }
         Log.d(TAG, "### End of Timers ###")
@@ -52,6 +50,15 @@ object TimingHelper {
 
     fun reset() {
         timingsMap.clear()
+    }
+
+    private fun Long.toFourDigitString(): String {
+        return when (this) {
+            in 0L..9L -> "   $this"
+            in 10L..99L -> "  $this"
+            in 100L..999L -> " $this"
+            else -> this.toString()
+        }
     }
 
     class Timer {

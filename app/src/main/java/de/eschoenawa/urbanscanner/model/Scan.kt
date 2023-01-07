@@ -12,7 +12,8 @@ data class Scan(
     val confidenceCutoff: Float,
     val maxPointsPerFrame: Int,
     val depthLimit: Float,
-    var epsgCode: String = ""
+    var epsgCode: String = "",
+    var pointCount: Long = 0
 ) {
     companion object {
 

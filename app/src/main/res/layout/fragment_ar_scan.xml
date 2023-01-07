@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <de.eschoenawa.urbanscanner.view.GeospatialStatusView
+    <de.eschoenawa.urbanscanner.ui.GeospatialStatusView
         android:id="@+id/geospatial_status_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.eschoenawa.urbanscanner.view.PointCloudStatusView
+    <de.eschoenawa.urbanscanner.ui.PointCloudStatusView
         android:id="@+id/point_cloud_status_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

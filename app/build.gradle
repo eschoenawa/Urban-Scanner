@@ -44,6 +44,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
+    // Kotlin reflection (for listing subclasses of seald classes)
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
+
     // Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"

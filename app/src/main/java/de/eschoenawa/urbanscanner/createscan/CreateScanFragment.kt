@@ -10,8 +10,9 @@ import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentCreateScanBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.model.Scan
+import de.eschoenawa.urbanscanner.ui.BaseFragment
 
-class CreateScanFragment : Fragment() {
+class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
 
     companion object {
         private const val DEFAULT_STORE_VPS = false
@@ -23,29 +24,14 @@ class CreateScanFragment : Fragment() {
         private const val DEFAULT_MAX_POINTS_PER_FRAME = 20000
         private const val DEFAULT_DEPTH_LIMIT = 25
     }
-    private var _binding: FragmentCreateScanBinding? = null
-    private val binding get() = _binding!!
 
     private val scanRepository = DependencyProvider.getScanRepository()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCreateScanBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListener()
         fillDefaultValues()
         initGeoreferenceCheckbox()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun initClickListener() {

@@ -13,27 +13,17 @@ import androidx.navigation.fragment.findNavController
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentScanListBinding
 import de.eschoenawa.urbanscanner.model.Scan
+import de.eschoenawa.urbanscanner.ui.BaseFragment
 
-class ScanListFragment : Fragment() {
+class ScanListFragment : BaseFragment<FragmentScanListBinding>() {
 
     companion object {
         private const val TAG = "ScanListFragment"
     }
 
-    private var _binding: FragmentScanListBinding? = null
-    private val binding get() = _binding!!
-
     private lateinit var adapter: ScanListAdapter
 
     private val viewModel by viewModels<ScanListViewModel>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentScanListBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,11 +31,6 @@ class ScanListFragment : Fragment() {
         initAdapter()
         registerObservers()
         viewModel.loadScans(requireContext())
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun setClickListeners() {

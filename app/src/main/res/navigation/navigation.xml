@@ -51,5 +51,24 @@
         <action
             android:id="@+id/action_scanDetailFragment_to_arScanFragment"
             app:destination="@id/arScanFragment" />
+        <action
+            android:id="@+id/action_scanDetailFragment_to_postProcessingFragment"
+            app:destination="@id/postProcessingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/postProcessingFragment"
+        android:name="de.eschoenawa.urbanscanner.postprocessing.PostProcessingFragment"
+        android:label="fragment_post_processing"
+        tools:layout="@layout/fragment_post_processing" >
+        <argument
+            android:name="scanName"
+            app:argType="string" />
+        <argument
+            android:name="processName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_postProcessingFragment_to_scanDetailFragment"
+            app:destination="@id/scanDetailFragment"
+            app:popUpToInclusive="@id/postProcessingFragment"/>
     </fragment>
 </navigation>

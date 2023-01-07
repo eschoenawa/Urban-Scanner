@@ -14,6 +14,7 @@
     <string name="scan_details">Name: %s\nConfidence Cutoff: %.2f\nMax. Points per frame: %d\nDepth limit: %.2fm\nStore VPS points: %s\nGeoreference: %s%s</string>
     <string name="scan_georeference_details">\n\tHorizontal accuracy: %.2fm\n\tVertical accuracy: %.2fm\n\tHeading accuracy: %.1f°\n\tEPSG-Code: %s</string>
     <string name="scan_data_details">Scan started: %s</string>
+    <string name="scan_raw_point_count">Raw scan point count: %d</string>
     <string name="auto_epsg">(Auto)</string>
     <string name="delete_title">Delete %s?</string>
     <string name="delete_message">Do you want to delete the scan %s?</string>
@@ -36,4 +37,5 @@
     <string name="error_invalid_confidence_cutoff"><![CDATA[Provide a valid confidence cutoff (0 <= cutoff <= 1)!]]></string>
     <string name="error_invalid_points_per_frame">Provide a valid number of points per frame!</string>
     <string name="error_invalid_depth_limit">Provide a valid depth limit between 0 and 65!</string>
+    <string name="utm_post_processor">To UTM coordinates</string>
 </resources>
