@@ -65,7 +65,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
                     progressBar.progress = progress.progress
                     tvProgress.text = progress.infoText
                     if (progress.progress == 100) {
-                        findNavController().navigate(PostProcessingFragmentDirections.actionPostProcessingFragmentToScanDetailFragment(scanName))
+                        findNavController().popBackStack()
                     }
                 }
             }

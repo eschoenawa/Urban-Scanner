@@ -11,7 +11,7 @@
     <string name="no_scans_hint">No scans created yet.\nClick the button below to create the first one.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="scan_details">Name: %s\nConfidence Cutoff: %.2f\nMax. Points per frame: %d\nDepth limit: %.2fm\nStore VPS points: %s\nGeoreference: %s%s</string>
+    <string name="scan_details">Name: %s\nConfidence Cutoff: %.2f\nMax. Points per frame: %d\nDepth limit: %.2fm\nGeoreference: %s%s</string>
     <string name="scan_georeference_details">\n\tHorizontal accuracy: %.2fm\n\tVertical accuracy: %.2fm\n\tHeading accuracy: %.1f°\n\tEPSG-Code: %s</string>
     <string name="scan_data_details">Scan started: %s</string>
     <string name="scan_raw_point_count">Raw scan point count: %d</string>
@@ -21,7 +21,6 @@
     <string name="delete_action">Delete</string>
     <string name="delete_cancel">Cancel</string>
     <string name="label_scan_name">Scan name:</string>
-    <string name="label_store_vps_points">Store VPS points:</string>
     <string name="label_georeference">Georeference:</string>
     <string name="label_horizontal_accuracy">Horizontal accuracy:</string>
     <string name="label_vertical_accuracy">Vertical accuracy:</string>

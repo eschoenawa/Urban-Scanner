@@ -89,7 +89,9 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
             }
             createAnchorIfApplicable(earth)
 
-            frameProcessor.processFrame(frame.frame, earth)
+            geoAnchor?.let { anchor ->
+                frameProcessor.processFrame(frame.frame, earth, anchor)
+            }
         }
 
         persistPointCloudIfRecording(pointCloud)
@@ -112,7 +114,7 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
     private fun createAnchorIfApplicable(earth: Earth?) {
         if (shouldCreateAnchor && earth != null) {
             val cameraPose = earth.cameraGeospatialPose
-            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, cameraPose.eastUpSouthQuaternion)
+            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, 0f, 0f, 0f, 1f)
             shouldCreateAnchor = false
             binding.scanFab.setImageResource(R.drawable.ic_start_record)
         }
@@ -123,6 +125,7 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
             if (recording) {
                 scanRepository.persistRawData(requireContext(), scan, pointCloud)
                 scan.pointCount += pointCloud.pointCount
+                scan.frameCount++
             }
         }
     }

@@ -1,6 +1,5 @@
 package de.eschoenawa.urbanscanner.helper
 
-import android.util.Log
 import org.cts.CRSFactory
 import org.cts.crs.CoordinateReferenceSystem
 import org.cts.crs.GeodeticCRS
@@ -57,6 +56,6 @@ class UtmCoordinateConverter(val targetEpsgCode: String) {
     }
 
     fun getUtmCoordinates(latitude: Double, longitude: Double): DoubleArray {
-        return coordinateOperation.transform(doubleArrayOf(latitude, longitude))
+        return coordinateOperation.transform(doubleArrayOf(longitude, latitude))
     }
 }

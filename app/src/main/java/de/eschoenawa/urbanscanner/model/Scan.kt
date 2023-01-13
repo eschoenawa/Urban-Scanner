@@ -4,7 +4,6 @@ import com.google.gson.Gson
 
 data class Scan(
     val name: String,
-    val storeVpsPoints: Boolean,
     val isGeoReferenced: Boolean,
     val horizontalAccuracyThreshold: Float,
     val verticalAccuracyThreshold: Float,
@@ -13,7 +12,8 @@ data class Scan(
     val maxPointsPerFrame: Int,
     val depthLimit: Float,
     var epsgCode: String = "",
-    var pointCount: Long = 0
+    var pointCount: Long = 0,
+    var frameCount: Int = 0
 ) {
     companion object {
 

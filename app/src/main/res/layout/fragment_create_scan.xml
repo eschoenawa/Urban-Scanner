@@ -28,30 +28,13 @@
         app:layout_constraintBottom_toBottomOf="@id/tv_name" />
 
     <TextView
-        android:id="@+id/tv_store_vps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_store_vps_points"
-        android:paddingVertical="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_name"/>
-
-    <CheckBox
-        android:id="@+id/checkbox_store_vps"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/tv_store_vps"
-        app:layout_constraintStart_toEndOf="@id/tv_store_vps"
-        app:layout_constraintBottom_toBottomOf="@id/tv_store_vps"/>
-
-    <TextView
         android:id="@+id/tv_georeference"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_georeference"
         android:paddingVertical="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_store_vps"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_name"/>
 
     <CheckBox
         android:id="@+id/checkbox_georeference"

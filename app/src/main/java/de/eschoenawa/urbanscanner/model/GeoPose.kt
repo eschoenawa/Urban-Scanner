@@ -8,5 +8,8 @@ data class GeoPose(
 ) {
     val latitudeRad = Math.toRadians(latitude)
     val longitudeRad = Math.toRadians(longitude)
-    val compassHeadingRad = Math.toRadians((heading + 360).mod(360.0))
+
+    fun toCsvString(): String {
+        return "$latitude,$longitude,$altitude,$heading"
+    }
 }

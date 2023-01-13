@@ -6,13 +6,18 @@ import boofcv.android.ConvertCameraImage
 import boofcv.struct.image.GrayU8
 import boofcv.struct.image.ImageType
 import boofcv.struct.image.Planar
-import com.google.ar.core.*
+import com.google.ar.core.Anchor
+import com.google.ar.core.Camera
+import com.google.ar.core.Coordinates2d
+import com.google.ar.core.Earth
+import com.google.ar.core.Frame
+import com.google.ar.core.Pose
 import de.eschoenawa.urbanscanner.helper.TimingHelper.withTimer
-import de.eschoenawa.urbanscanner.helper.fromWorldToGeoPose
 import de.eschoenawa.urbanscanner.helper.toGeoPose
 import de.eschoenawa.urbanscanner.model.DepthCameraIntrinsics
+import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.GeoPose
-import de.eschoenawa.urbanscanner.model.RawPixelData
+import de.eschoenawa.urbanscanner.model.PixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import org.ddogleg.struct.DogArray_I8
 import pabeles.concurrency.GrowArray
@@ -27,14 +32,14 @@ class FrameImageData(
     private val depthImage: Image,
     private val confidenceImage: Image,
     private val cameraImage: Image,
-    private val earth: Earth?
+    private val cameraPose: Pose,
+    earth: Earth?
 ) {
     private lateinit var depthBuffer: ShortBuffer
     private lateinit var confidenceBuffer: ByteBuffer
     private lateinit var boofImage: Planar<GrayU8>
     private lateinit var cameraCoordinatesOfDepthTextureCorners: FloatArray
     private lateinit var depthCameraIntrinsics: DepthCameraIntrinsics
-    private val cameraPose: Pose
     private val cameraGeoPose: GeoPose?
 
     val width: Int
@@ -48,11 +53,10 @@ class FrameImageData(
         initBoofImage(workArrays)
         initCornerCoordinates(arFrame)
         initDepthCameraIntrinsics(arFrame.camera)
-        cameraPose = arFrame.camera.pose
         cameraGeoPose = earth?.cameraGeospatialPose?.toGeoPose()
     }
 
-    fun getPixelDataAt(x: Int, y: Int): RawPixelData? {
+    fun getPixelDataAt(x: Int, y: Int): PixelData? {
         val mmDepth = withTimer("getPixelDepth") {
             depthBuffer.get(y * depthImage.width + x)
         }
@@ -104,36 +108,16 @@ class FrameImageData(
                 depthMeters = depthMeters
             )
         }
-        return if (scan.isGeoReferenced) {
-            if (earth == null) throw IllegalStateException("Earth cannot be null when georeferencing!")
-            val geoPose = withTimer("georeference") {
-                worldPoint.fromWorldToGeoPose(cameraPose, cameraGeoPose!!)
-                //TODO remove val worldPose = Pose.makeTranslation(worldPoint)
-                //TODO remove earth.getGeospatialPose(worldPose)
-            }
-            RawPixelData(
-                worldPoint[0],
-                worldPoint[1],
-                worldPoint[2],
-                depthConfidence,
-                rgb[0].toUByte(),
-                rgb[1].toUByte(),
-                rgb[2].toUByte(),
-                geoPose.latitude,
-                geoPose.longitude,
-                geoPose.altitude
-            )
-        } else {
-            RawPixelData(
-                worldPoint[0],
-                worldPoint[1],
-                worldPoint[2],
-                depthConfidence,
-                rgb[0].toUByte(),
-                rgb[1].toUByte(),
-                rgb[2].toUByte()
-            )
-        }
+        return PixelData(
+            worldPoint[0],
+            worldPoint[1],
+            worldPoint[2],
+            depthConfidence,
+            rgb[0].toUByte(),
+            rgb[1].toUByte(),
+            rgb[2].toUByte(),
+            scan.frameCount
+        )
     }
 
     private fun initBuffers() {

@@ -66,9 +66,5 @@
         <argument
             android:name="processName"
             app:argType="string" />
-        <action
-            android:id="@+id/action_postProcessingFragment_to_scanDetailFragment"
-            app:destination="@id/scanDetailFragment"
-            app:popUpToInclusive="@id/postProcessingFragment"/>
     </fragment>
 </navigation>

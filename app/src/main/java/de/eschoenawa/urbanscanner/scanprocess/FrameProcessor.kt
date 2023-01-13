@@ -1,13 +1,18 @@
 package de.eschoenawa.urbanscanner.scanprocess
 
+import com.google.ar.core.Anchor
 import com.google.ar.core.Earth
 import com.google.ar.core.Frame
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.helper.TimingHelper.withTimer
+import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.Scan
+import io.github.sceneview.ar.arcore.position
+import io.github.sceneview.ar.arcore.rotation
+import io.github.sceneview.math.toPosition
 import org.ddogleg.struct.DogArray_I8
 import pabeles.concurrency.GrowArray
 import kotlin.math.ceil
@@ -19,7 +24,7 @@ class FrameProcessor(private val scan: Scan) {
     private var lastDepthTimestamp = 0L
 
 
-    fun processFrame(arFrame: Frame, earth: Earth?): FramePointCloud? {
+    fun processFrame(arFrame: Frame, earth: Earth?, anchor: Anchor): FramePointCloud? {
         val preconditionsMet = withTimer("checkPreconditions") {
             checkPreconditions(arFrame, earth)
         }
@@ -38,6 +43,10 @@ class FrameProcessor(private val scan: Scan) {
                 arFrame.acquireRawDepthConfidenceImage().use { confidenceImage ->
                     arFrame.acquireCameraImage().use { cameraImage ->
                         TimingHelper.endTimer("openImages")
+                        val cameraLocalPose = anchor.pose.inverse().compose(arFrame.camera.pose)
+                        val frameMetaData = withTimer("generateMetaData") {
+                            FrameMetaData(scan, cameraLocalPose.position, earth)
+                        }
                         val imageData = withTimer("createImageData") {
                             FrameImageData(
                                 arFrame,
@@ -46,6 +55,7 @@ class FrameProcessor(private val scan: Scan) {
                                 depthImage,
                                 confidenceImage,
                                 cameraImage,
+                                cameraLocalPose,
                                 earth
                             )
                         }
@@ -53,7 +63,7 @@ class FrameProcessor(private val scan: Scan) {
                             ceil(sqrt((imageData.width * imageData.height / scan.maxPointsPerFrame.toFloat()))).toInt()
                         }
                         val resultPointCloud = withTimer("initResultPointCloud") {
-                            initResultPointCloud(step, imageData)
+                            initResultPointCloud(step, frameMetaData, imageData)
                         }
 
                         withTimer("processing") {
@@ -96,8 +106,8 @@ class FrameProcessor(private val scan: Scan) {
         return true
     }
 
-    private fun initResultPointCloud(step: Int, imageData: FrameImageData): FramePointCloud {
+    private fun initResultPointCloud(step: Int, frameMetaData: FrameMetaData, imageData: FrameImageData): FramePointCloud {
         val potentialPointCount = imageData.width / step * imageData.height / step
-        return FramePointCloud(Array(potentialPointCount) { null })
+        return FramePointCloud(frameMetaData, Array(potentialPointCount) { null })
     }
 }

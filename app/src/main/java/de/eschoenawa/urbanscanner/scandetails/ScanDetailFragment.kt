@@ -32,8 +32,10 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
         scan = scanRepository.getScan(requireContext(), scanName)
         initButtons()
         val rawDataExists = scanRepository.doesScanHaveRawData(requireContext(), scan)
-        if (!rawDataExists && scan.pointCount > 0) {
+        if (!rawDataExists && (scan.pointCount > 0 || scan.frameCount > 0)) {
             scan.pointCount = 0
+            scan.frameCount = 0
+            scan.epsgCode = ""
             scanRepository.persistScan(requireContext(), scan)
         }
         setTexts(rawDataExists)
@@ -55,7 +57,6 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
 
     private fun setTexts(rawDataExists: Boolean) {
         with(binding) {
-            val storeVpsString = getStringForBoolean(scan.storeVpsPoints)
             val georeferenceString = getStringForBoolean(scan.isGeoReferenced)
             val georeferenceDetailsString = if (scan.isGeoReferenced) {
                 getString(
@@ -72,7 +73,6 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
                 scan.confidenceCutoff,
                 scan.maxPointsPerFrame,
                 scan.depthLimit,
-                storeVpsString,
                 georeferenceString,
                 georeferenceDetailsString
             )

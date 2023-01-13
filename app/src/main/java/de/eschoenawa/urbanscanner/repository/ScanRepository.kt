@@ -1,10 +1,10 @@
 package de.eschoenawa.urbanscanner.repository
 
 import android.content.Context
+import android.util.Log
 import de.eschoenawa.urbanscanner.helper.TimingHelper
+import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.FramePointCloud
-import de.eschoenawa.urbanscanner.model.PixelData
-import de.eschoenawa.urbanscanner.model.RawPixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import java.io.File
 import java.io.FileReader
@@ -15,6 +15,7 @@ import java.nio.file.Paths
 class ScanRepository {
     private companion object {
         private const val RAW_DATA_FILE = "raw.xyz"
+        private const val FRAME_DATA_FILE = "frames.csv"
         private const val UTM_DATA_FILE = "utm.xyz"
         private const val META_DATA_FILE = "meta.json"
     }
@@ -57,13 +58,18 @@ class ScanRepository {
     }
 
     fun persistRawData(context: Context, scan: Scan, framePointCloud: FramePointCloud) {
-        val fullFilename = getRawDataFilePath(context, scan)
-        val fileString = TimingHelper.withTimer("preparePersist") {
+        val pointDataFilename = getRawDataFilePath(context, scan)
+        val frameDataFilename = getFrameDataFilePath(context, scan)
+        val pointsString = TimingHelper.withTimer("preparePersist") {
             framePointCloud.generateFileString()
         }
+        val metaDataString = framePointCloud.generateMetaDataFileString()
         TimingHelper.withTimer("persist") {
-            FileWriter(fullFilename, true).use { fw ->
-                fw.write(fileString)
+            FileWriter(pointDataFilename, true).use { fw ->
+                fw.write(pointsString)
+            }
+            FileWriter(frameDataFilename, true).use { fw ->
+                fw.write(metaDataString)
             }
         }
     }
@@ -76,14 +82,14 @@ class ScanRepository {
         context: Context,
         scan: Scan,
         targetFilepath: String,
-        process: suspend (RawPixelData) -> PixelData
+        process: suspend (String) -> String
     ) {
         val rawFilename = getRawDataFilePath(context, scan)
         FileWriter(targetFilepath).use { fw ->
             File(rawFilename).useLines { lines ->
                 lines.forEach { line ->
                     if (line.isNotBlank()) {
-                        fw.write(process(RawPixelData.fromString(line)).stringRepresentation)
+                        fw.write(process(line))
                         fw.write("\n")
                     }
                 }
@@ -93,6 +99,20 @@ class ScanRepository {
 
     fun getUtmDataFilePath(context: Context, scan: Scan): String {
         return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$UTM_DATA_FILE"
+    }
+
+    fun getFramesMetadata(context: Context, scan: Scan): List<FrameMetaData> {
+        val metaDataFileName = getFrameDataFilePath(context, scan)
+        val result = mutableListOf<FrameMetaData>()
+        File(metaDataFileName).useLines { lines ->
+            lines.forEach { line ->
+                if (line.isNotBlank()) {
+                    val frameMetaData = FrameMetaData.fromCsvString(line)
+                    result.add(frameMetaData)
+                }
+            }
+        }
+        return result.sortedBy { it.id }
     }
 
     private fun loadFromName(context: Context, name: String): Scan {
@@ -124,5 +144,9 @@ class ScanRepository {
 
     private fun getRawDataFilePath(context: Context, scan: Scan): String {
         return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$RAW_DATA_FILE"
+    }
+
+    private fun getFrameDataFilePath(context: Context, scan: Scan): String {
+        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$FRAME_DATA_FILE"
     }
 }

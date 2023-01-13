@@ -15,7 +15,6 @@ import de.eschoenawa.urbanscanner.ui.BaseFragment
 class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
 
     companion object {
-        private const val DEFAULT_STORE_VPS = false
         private const val DEFAULT_GEOREFERENCE = true
         private const val DEFAULT_HORIZONTAL = 2f
         private const val DEFAULT_VERTICAL = 2f
@@ -88,7 +87,6 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
         with(binding) {
             return Scan(
                 name = editName.text.toString().trim(),
-                storeVpsPoints = checkboxStoreVps.isChecked,
                 isGeoReferenced = checkboxGeoreference.isChecked,
                 horizontalAccuracyThreshold = editHorizontal.text.toString().toFloat(),
                 verticalAccuracyThreshold = editVertical.text.toString().toFloat(),
@@ -102,7 +100,6 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
 
     private fun fillDefaultValues() {
         with(binding) {
-            checkboxStoreVps.isChecked = DEFAULT_STORE_VPS
             checkboxGeoreference.isChecked = DEFAULT_GEOREFERENCE
             editConfidenceCutoff.setText(DEFAULT_CONFIDENCE_CUTOFF.toString())
             editMaxPointsPerFrame.setText(DEFAULT_MAX_POINTS_PER_FRAME.toString())
