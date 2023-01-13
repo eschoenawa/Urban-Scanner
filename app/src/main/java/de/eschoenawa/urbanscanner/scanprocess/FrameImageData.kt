@@ -8,8 +8,11 @@ import boofcv.struct.image.ImageType
 import boofcv.struct.image.Planar
 import com.google.ar.core.*
 import de.eschoenawa.urbanscanner.helper.TimingHelper.withTimer
+import de.eschoenawa.urbanscanner.helper.fromWorldToGeoPose
+import de.eschoenawa.urbanscanner.helper.toGeoPose
 import de.eschoenawa.urbanscanner.model.DepthCameraIntrinsics
-import de.eschoenawa.urbanscanner.model.PixelData
+import de.eschoenawa.urbanscanner.model.GeoPose
+import de.eschoenawa.urbanscanner.model.RawPixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import org.ddogleg.struct.DogArray_I8
 import pabeles.concurrency.GrowArray
@@ -32,6 +35,7 @@ class FrameImageData(
     private lateinit var cameraCoordinatesOfDepthTextureCorners: FloatArray
     private lateinit var depthCameraIntrinsics: DepthCameraIntrinsics
     private val cameraPose: Pose
+    private val cameraGeoPose: GeoPose?
 
     val width: Int
         get() = depthImage.width
@@ -45,9 +49,10 @@ class FrameImageData(
         initCornerCoordinates(arFrame)
         initDepthCameraIntrinsics(arFrame.camera)
         cameraPose = arFrame.camera.pose
+        cameraGeoPose = earth?.cameraGeospatialPose?.toGeoPose()
     }
 
-    fun getPixelDataAt(x: Int, y: Int): PixelData? {
+    fun getPixelDataAt(x: Int, y: Int): RawPixelData? {
         val mmDepth = withTimer("getPixelDepth") {
             depthBuffer.get(y * depthImage.width + x)
         }
@@ -101,11 +106,12 @@ class FrameImageData(
         }
         return if (scan.isGeoReferenced) {
             if (earth == null) throw IllegalStateException("Earth cannot be null when georeferencing!")
-            val geospatialPose = withTimer("georeference") {
-                val worldPose = Pose.makeTranslation(worldPoint)
-                earth.getGeospatialPose(worldPose)
+            val geoPose = withTimer("georeference") {
+                worldPoint.fromWorldToGeoPose(cameraPose, cameraGeoPose!!)
+                //TODO remove val worldPose = Pose.makeTranslation(worldPoint)
+                //TODO remove earth.getGeospatialPose(worldPose)
             }
-            PixelData(
+            RawPixelData(
                 worldPoint[0],
                 worldPoint[1],
                 worldPoint[2],
@@ -113,12 +119,12 @@ class FrameImageData(
                 rgb[0].toUByte(),
                 rgb[1].toUByte(),
                 rgb[2].toUByte(),
-                geospatialPose.latitude,
-                geospatialPose.longitude,
-                geospatialPose.altitude
+                geoPose.latitude,
+                geoPose.longitude,
+                geoPose.altitude
             )
         } else {
-            PixelData(
+            RawPixelData(
                 worldPoint[0],
                 worldPoint[1],
                 worldPoint[2],

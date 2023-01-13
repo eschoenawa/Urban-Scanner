@@ -1,9 +1,11 @@
 package de.eschoenawa.urbanscanner.postprocessing
 
 import android.content.Context
+import android.util.Log
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.helper.UtmCoordinateConverter
-import de.eschoenawa.urbanscanner.model.PixelData
+import de.eschoenawa.urbanscanner.model.PrecisePixelData
+import de.eschoenawa.urbanscanner.model.RawPixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import de.eschoenawa.urbanscanner.repository.ScanRepository
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +25,8 @@ class UtmPostProcessor : PostProcessor {
         scanRepository: ScanRepository
     ): Flow<Progress> = flow {
         var pointsProcessed = 0L
-        var utmCoordinateConverter =
-            if (scan.epsgCode.isBlank()) null else UtmCoordinateConverter(scan.epsgCode)
+        var utmCoordinateConverter: UtmCoordinateConverter? =
+            if (scan.epsgCode.isBlank()) null else null//TODO UtmCoordinateConverter(scan.epsgCode)
         scanRepository.processRawData(
             context,
             scan,
@@ -42,6 +44,7 @@ class UtmPostProcessor : PostProcessor {
                 pixelData.latitude!!,
                 pixelData.longitude!!
             )
+            Log.d("O_O", "New coordinates (${newCoordinates[0]}|${newCoordinates[1]})")
             pointsProcessed++
             //TODO string template?
             emit(
@@ -50,10 +53,10 @@ class UtmPostProcessor : PostProcessor {
                     ((pointsProcessed.toDouble() / scan.pointCount.toDouble()) * 100).toInt()
                 )
             )
-            return@processRawData PixelData(
-                newCoordinates[0].toFloat(),
-                pixelData.altitude!!.toFloat(),
-                newCoordinates[1].toFloat(),
+            return@processRawData PrecisePixelData(
+                newCoordinates[0],
+                pixelData.altitude!!,
+                newCoordinates[1],
                 pixelData.confidence,
                 pixelData.r,
                 pixelData.g,

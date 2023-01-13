@@ -3,7 +3,7 @@ package de.eschoenawa.urbanscanner.model
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 
 class FramePointCloud(
-    val data: Array<PixelData?>
+    val data: Array<RawPixelData?>
 ) {
     var pointCount = 0
 
@@ -12,7 +12,7 @@ class FramePointCloud(
             data.forEach { nullableData ->
                 nullableData?.let { pixelData ->
                     TimingHelper.startTimer("build")
-                    val line = pixelData.toString()
+                    val line = pixelData.stringRepresentation
                     TimingHelper.endTimer("build")
                     TimingHelper.startTimer("append")
                     appendLine(line)

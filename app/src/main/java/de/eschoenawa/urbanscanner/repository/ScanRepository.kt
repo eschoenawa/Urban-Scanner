@@ -4,6 +4,7 @@ import android.content.Context
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.PixelData
+import de.eschoenawa.urbanscanner.model.RawPixelData
 import de.eschoenawa.urbanscanner.model.Scan
 import java.io.File
 import java.io.FileReader
@@ -75,14 +76,14 @@ class ScanRepository {
         context: Context,
         scan: Scan,
         targetFilepath: String,
-        process: suspend (PixelData) -> PixelData
+        process: suspend (RawPixelData) -> PixelData
     ) {
         val rawFilename = getRawDataFilePath(context, scan)
         FileWriter(targetFilepath).use { fw ->
             File(rawFilename).useLines { lines ->
                 lines.forEach { line ->
                     if (line.isNotBlank()) {
-                        fw.write(process(PixelData.fromString(line)).toString())
+                        fw.write(process(RawPixelData.fromString(line)).stringRepresentation)
                         fw.write("\n")
                     }
                 }
