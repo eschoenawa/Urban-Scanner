@@ -1,7 +1,6 @@
 package de.eschoenawa.urbanscanner.repository
 
 import android.content.Context
-import android.util.Log
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.FramePointCloud

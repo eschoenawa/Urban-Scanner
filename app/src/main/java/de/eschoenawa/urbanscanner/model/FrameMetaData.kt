@@ -6,6 +6,7 @@ import dev.romainguy.kotlin.math.Float3
 
 data class FrameMetaData(
     val id: Int,
+    val scanNumber: Int,
     val cameraPosition: Float3,
     val cameraGeoPose: GeoPose? = null,
     val horizontalAccuracy: Float? = null,
@@ -17,6 +18,7 @@ data class FrameMetaData(
 
     constructor(scan: Scan, cameraPosition: Float3, earth: Earth?) : this(
         scan.frameCount,
+        scan.currentScanNumber,
         cameraPosition,
         earth?.cameraGeospatialPose?.toGeoPose(),
         earth?.cameraGeospatialPose?.horizontalAccuracy?.toFloat(),
@@ -28,30 +30,32 @@ data class FrameMetaData(
         fun fromCsvString(source: String): FrameMetaData {
             val components = source.split(",")
             val cameraPosition = Float3(
-                components[1].toFloat(),
                 components[2].toFloat(),
-                components[3].toFloat()
+                components[3].toFloat(),
+                components[4].toFloat()
             )
             return when (components.size) {
-                11 -> {
+                12 -> {
                     val cameraGeoPose = GeoPose(
-                        components[4].toDouble(),
                         components[5].toDouble(),
                         components[6].toDouble(),
-                        components[7].toDouble()
+                        components[7].toDouble(),
+                        components[8].toDouble()
                     )
                     FrameMetaData(
                         components[0].toInt(),
+                        components[1].toInt(),
                         cameraPosition,
                         cameraGeoPose,
-                        components[8].toFloat(),
                         components[9].toFloat(),
-                        components[10].toFloat()
+                        components[10].toFloat(),
+                        components[11].toFloat()
                     )
                 }
-                4 -> {
+                5 -> {
                     FrameMetaData(
                         components[0].toInt(),
+                        components[1].toInt(),
                         cameraPosition
                     )
                 }
@@ -64,8 +68,8 @@ data class FrameMetaData(
 
     fun getCsvString(): String {
         cameraGeoPose?.let { geoPose ->
-            return "$id,${cameraPosition.x},${cameraPosition.y},${cameraPosition.z},${geoPose.toCsvString()},$horizontalAccuracy,$verticalAccuracy,$headingAccuracy"
+            return "$id,$scanNumber,${cameraPosition.x},${cameraPosition.y},${cameraPosition.z},${geoPose.toCsvString()},$horizontalAccuracy,$verticalAccuracy,$headingAccuracy"
         }
-        return "$id,${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}"
+        return "$id,$scanNumber,${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}"
     }
 }

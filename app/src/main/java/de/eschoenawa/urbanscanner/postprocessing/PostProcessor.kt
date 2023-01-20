@@ -29,12 +29,11 @@ interface PostProcessingConfig {
 }
 
 object PostProcessorRegistry {
-    val postProcessorInfos: List<PostProcessorInfo>
+    val postProcessorInfos = PostProcessorInfo::class.sealedSubclasses
+        .map { it.objectInstance as PostProcessorInfo }
     private val postProcessors = emptyMap<String, () -> PostProcessor>().toMutableMap()
 
     init {
-        postProcessorInfos = PostProcessorInfo::class.sealedSubclasses
-            .map { it.objectInstance as PostProcessorInfo }
         postProcessorInfos.forEach { info ->
             postProcessors[info.identifier] = info.factory
         }

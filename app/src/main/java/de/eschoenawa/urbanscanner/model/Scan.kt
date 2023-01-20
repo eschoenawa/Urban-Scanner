@@ -13,7 +13,8 @@ data class Scan(
     val depthLimit: Float,
     var epsgCode: String = "",
     var pointCount: Long = 0,
-    var frameCount: Int = 0
+    var frameCount: Int = 0,
+    var currentScanNumber: Int = 0
 ) {
     companion object {
 

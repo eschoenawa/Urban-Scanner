@@ -46,6 +46,8 @@ class ConfigListAdapter(
                         valueChangeCallback(config, newValue)
                     }
                 })
+                ivWarn.isInvisible =
+                    config.validateValue(editValue.text.toString()) || (config.required && editValue.text.isBlank())
             }
         }
     }

@@ -1,7 +1,6 @@
 package de.eschoenawa.urbanscanner.postprocessing
 
 import android.content.Context
-import android.util.Log
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.helper.UtmCoordinateConverter
 import de.eschoenawa.urbanscanner.helper.getGeoPose
@@ -12,8 +11,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import org.cts.CRSFactory
+import org.cts.crs.CRSException
+import org.cts.registry.EPSGRegistry
 
 class UtmPostProcessor : PostProcessor {
+
+    private var shouldUseCustomEpsg = false
+    private var customEpsgCode = ""
+
 
     override fun getName(): Int {
         return R.string.utm_post_processor
@@ -25,6 +31,10 @@ class UtmPostProcessor : PostProcessor {
         scanRepository: ScanRepository
     ): Flow<Progress> = flow {
         var pointsProcessed = 0L
+        if (shouldUseCustomEpsg) {
+            scan.epsgCode = customEpsgCode
+            scanRepository.persistScan(context, scan)
+        }
         var utmCoordinateConverter: UtmCoordinateConverter? =
             if (scan.epsgCode.isBlank()) null else UtmCoordinateConverter(scan.epsgCode)
         val framesMetaData = scanRepository.getFramesMetadata(context, scan)
@@ -37,7 +47,8 @@ class UtmPostProcessor : PostProcessor {
             val frameMetaData = framesMetaData[pixelData.frame]
             if (!frameMetaData.isGeoReferenced) throw IllegalArgumentException("Data not georeferenced!")
             // TODO alternative approach: convert cam pose to UTM and use UTM for offsets
-            val pixelGeoPose = pixelData.getGeoPose(frameMetaData.cameraPosition, frameMetaData.cameraGeoPose!!)
+            val pixelGeoPose =
+                pixelData.getGeoPose(frameMetaData.cameraPosition, frameMetaData.cameraGeoPose!!)
             if (utmCoordinateConverter == null) {
                 utmCoordinateConverter = UtmCoordinateConverter.fromLatLong(
                     pixelGeoPose.latitude.toFloat(),
@@ -64,11 +75,43 @@ class UtmPostProcessor : PostProcessor {
     }.flowOn(Dispatchers.IO)
 
     override fun getConfig(): List<PostProcessingConfig> {
-        //TODO add config?
-        return emptyList()
+        return listOf(
+            UseCustomEpsgConfig,
+            CustomEpsgConfig
+        )
     }
 
     override fun configure(configValues: Map<PostProcessingConfig, String>) {
-        /*noop*/
+        shouldUseCustomEpsg = configValues[UseCustomEpsgConfig]!!.toBoolean()
+        customEpsgCode = configValues[CustomEpsgConfig]!!
+    }
+
+    object UseCustomEpsgConfig : PostProcessingConfig {
+        override val required = false
+        override val name = R.string.utm_post_processor_config_use_custom_epsg
+
+        override fun validateValue(value: String): Boolean {
+            if (value.isBlank()) return true
+            if (value.lowercase() == "true" || value.lowercase() == "false") return true
+            return false
+        }
+    }
+
+    object CustomEpsgConfig : PostProcessingConfig {
+        private val crsFactory = CRSFactory().apply {
+            registryManager.addRegistry(EPSGRegistry())
+        }
+        override val required = false
+        override val name = R.string.utm_post_processor_config_custom_epsg
+
+        override fun validateValue(value: String): Boolean {
+            if (value.isBlank()) return true
+            return try {
+                val crs = crsFactory.getCRS(value)
+                crs != null
+            } catch (e: CRSException) {
+                false
+            }
+        }
     }
 }

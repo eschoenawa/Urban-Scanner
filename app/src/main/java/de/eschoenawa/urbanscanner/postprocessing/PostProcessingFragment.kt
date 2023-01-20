@@ -46,7 +46,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
             configMap[it] = ""
         }
         val adapter = ConfigListAdapter(::onConfigValueChanged)
-        adapter.submitList(processor.getConfig())
+        adapter.submitList(config)
         binding.rvConfigList.adapter = adapter
         binding.btnProcess.setOnClickListener { onStartProcess() }
         checkConfigValues()
@@ -59,6 +59,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
             //TODO display some other info?
             rvConfigList.isVisible = false
         }
+        processor.configure(configMap)
         lifecycleScope.launchWhenResumed {
             processor.process(requireContext(), scan, scanRepository).collect { progress ->
                 with(binding) {
@@ -80,7 +81,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
     private fun checkConfigValues() {
         var allValuesValid = true
         configMap.entries.forEach { entry ->
-            if(!entry.key.validateValue(entry.value)) {
+            if(!entry.key.validateValue(entry.value) || (entry.key.required && entry.value.isBlank())) {
                 allValuesValid = false
             }
         }

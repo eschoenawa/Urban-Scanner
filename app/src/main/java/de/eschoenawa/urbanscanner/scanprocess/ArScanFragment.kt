@@ -73,6 +73,7 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
 
     override fun onPause() {
         super.onPause()
+        scan.currentScanNumber++
         scanRepository.persistScan(requireContext(), scan)
     }
 
