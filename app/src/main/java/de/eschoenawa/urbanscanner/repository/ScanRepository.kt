@@ -16,6 +16,7 @@ class ScanRepository {
         private const val RAW_DATA_FILE = "raw.xyz"
         private const val FRAME_DATA_FILE = "frames.csv"
         private const val UTM_DATA_FILE = "utm.xyz"
+        private const val UTM_CAM_DATA_FILE = "frames_utm.csv"
         private const val META_DATA_FILE = "meta.json"
     }
 
@@ -96,8 +97,31 @@ class ScanRepository {
         }
     }
 
+    suspend fun processFrameMetadata(
+        context: Context,
+        scan: Scan,
+        targetFilepath: String,
+        process: suspend (String) -> String
+    ) {
+        val frameMetaDataFilename = getFrameDataFilePath(context, scan)
+        FileWriter(targetFilepath).use { fw ->
+            File(frameMetaDataFilename).useLines { lines ->
+                lines.forEach { line ->
+                    if (line.isNotBlank()) {
+                        fw.write(process(line))
+                        fw.write("\n")
+                    }
+                }
+            }
+        }
+    }
+
     fun getUtmDataFilePath(context: Context, scan: Scan): String {
         return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$UTM_DATA_FILE"
+    }
+
+    fun getUtmCamDataFilePath(context: Context, scan: Scan): String {
+        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$UTM_CAM_DATA_FILE"
     }
 
     fun getFramesMetadata(context: Context, scan: Scan): List<FrameMetaData> {

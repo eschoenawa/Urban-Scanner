@@ -26,6 +26,16 @@ data class FrameMetaData(
         earth?.cameraGeospatialPose?.headingAccuracy?.toFloat()
     )
 
+    constructor(scan: Scan, cameraPosition: Float3, cameraGeoPose: GeoPose, horizontalAccuracy: Float, verticalAccuracy: Float, headingAccuracy: Float) : this (
+        scan.frameCount,
+        scan.currentScanNumber,
+        cameraPosition,
+        cameraGeoPose,
+        horizontalAccuracy,
+        verticalAccuracy,
+        headingAccuracy
+    )
+
     companion object {
         fun fromCsvString(source: String): FrameMetaData {
             val components = source.split(",")

@@ -3,7 +3,7 @@ package de.eschoenawa.urbanscanner.model
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 
 class FramePointCloud(
-    val frameMetaData: FrameMetaData,
+    private val frameMetaData: FrameMetaData,
     val data: Array<PixelData?>
 ) {
     var pointCount = 0

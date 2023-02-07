@@ -1,5 +1,7 @@
 package de.eschoenawa.urbanscanner.model
 
+import dev.romainguy.kotlin.math.Float3
+
 data class PixelData(
     val x: Float,
     val y: Float,
@@ -11,6 +13,7 @@ data class PixelData(
     val frame: Int
 ) {
     val normalizedConfidence = confidence.toInt() / 255f
+    val position = Float3(x, y, z)
 
     companion object {
         fun fromString(source: String): PixelData {

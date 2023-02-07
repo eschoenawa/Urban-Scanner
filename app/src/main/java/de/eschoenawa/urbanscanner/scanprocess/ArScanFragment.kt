@@ -1,11 +1,9 @@
 package de.eschoenawa.urbanscanner.scanprocess
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Earth
@@ -13,6 +11,7 @@ import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentArScanBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.helper.TimingHelper
+import de.eschoenawa.urbanscanner.helper.toGeoPoseWithoutHeading
 import de.eschoenawa.urbanscanner.model.FramePointCloud
 import de.eschoenawa.urbanscanner.model.Scan
 import de.eschoenawa.urbanscanner.ui.BaseFragment
@@ -100,7 +99,12 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
     }
 
     private fun updateGeospatialStatusText(earth: Earth?) {
-        binding.geospatialStatusView.update(earth)
+        //TODO verify visibility works for non-continuous (invisible after anchor place)
+        if (scan.isGeoReferenced && scan.continuousGeoReference || (scan.isGeoReferenced && geoAnchor == null)) {
+            binding.geospatialStatusView.update(earth)
+        } else {
+            binding.geospatialStatusView.isVisible = false
+        }
     }
 
     private fun initGeospatialStatusView() {
@@ -114,8 +118,44 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
 
     private fun createAnchorIfApplicable(earth: Earth?) {
         if (shouldCreateAnchor && earth != null) {
+            if (!scan.checkEarthTrackingComplianceWithThresholds(earth)) {
+                //TODO string ref
+                Toast.makeText(requireContext(), "Not accurate enough!", Toast.LENGTH_SHORT).show()
+                shouldCreateAnchor = false
+                return
+            }
             val cameraPose = earth.cameraGeospatialPose
-            geoAnchor = earth.createAnchor(cameraPose.latitude, cameraPose.longitude, cameraPose.altitude, 0f, 0f, 0f, 1f)
+            geoAnchor = if (scan.continuousGeoReference) {
+                earth.createAnchor(
+                    cameraPose.latitude,
+                    cameraPose.longitude,
+                    cameraPose.altitude,
+                    0f,
+                    0f,
+                    0f,
+                    1f
+                )
+            } else {
+                frameProcessor.anchorGeoPose =
+                    earth.cameraGeospatialPose.toGeoPoseWithoutHeading()
+                frameProcessor.accuracies = floatArrayOf(
+                    earth.cameraGeospatialPose.horizontalAccuracy.toFloat(),
+                    earth.cameraGeospatialPose.verticalAccuracy.toFloat(),
+                    earth.cameraGeospatialPose.headingAccuracy.toFloat()
+                )
+                // Create normal anchor (doesn't update position when camera geopose updates)
+                binding.sceneView.arSession!!.createAnchor(
+                    earth.getPose(
+                        cameraPose.latitude,
+                        cameraPose.longitude,
+                        cameraPose.altitude,
+                        0f,
+                        0f,
+                        0f,
+                        1f
+                    )
+                )
+            }
             shouldCreateAnchor = false
             binding.scanFab.setImageResource(R.drawable.ic_start_record)
         }

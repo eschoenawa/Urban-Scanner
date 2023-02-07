@@ -1,10 +1,7 @@
 package de.eschoenawa.urbanscanner.createscan
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentCreateScanBinding
@@ -16,6 +13,7 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
 
     companion object {
         private const val DEFAULT_GEOREFERENCE = true
+        private const val DEFAULT_CONTINUOUS_GEOREFERENCE = true
         private const val DEFAULT_HORIZONTAL = 2f
         private const val DEFAULT_VERTICAL = 2f
         private const val DEFAULT_HEADING = 5f
@@ -88,6 +86,7 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
             return Scan(
                 name = editName.text.toString().trim(),
                 isGeoReferenced = checkboxGeoreference.isChecked,
+                continuousGeoReference = checkboxContinuousGeoreference.isChecked,
                 horizontalAccuracyThreshold = editHorizontal.text.toString().toFloat(),
                 verticalAccuracyThreshold = editVertical.text.toString().toFloat(),
                 headingAccuracyThreshold = editHeading.text.toString().toFloat(),
@@ -101,6 +100,7 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
     private fun fillDefaultValues() {
         with(binding) {
             checkboxGeoreference.isChecked = DEFAULT_GEOREFERENCE
+            checkboxContinuousGeoreference.isChecked = DEFAULT_CONTINUOUS_GEOREFERENCE
             editConfidenceCutoff.setText(DEFAULT_CONFIDENCE_CUTOFF.toString())
             editMaxPointsPerFrame.setText(DEFAULT_MAX_POINTS_PER_FRAME.toString())
             editDepthLimit.setText(DEFAULT_DEPTH_LIMIT.toString())
@@ -127,6 +127,7 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
 
     private fun setEnabledForGeoreferencingFields(enabled: Boolean) {
         with(binding) {
+            checkboxContinuousGeoreference.isEnabled = enabled
             editHorizontal.isEnabled = enabled
             editVertical.isEnabled = enabled
             editHeading.isEnabled = enabled

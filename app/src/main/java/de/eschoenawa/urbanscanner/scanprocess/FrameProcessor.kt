@@ -7,8 +7,11 @@ import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import de.eschoenawa.urbanscanner.helper.TimingHelper
 import de.eschoenawa.urbanscanner.helper.TimingHelper.withTimer
+import de.eschoenawa.urbanscanner.helper.getGeoPoseWithHeadingOfLocalPose
+import de.eschoenawa.urbanscanner.helper.getGeoPoseWithoutHeadingOfLocalPosition
 import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.FramePointCloud
+import de.eschoenawa.urbanscanner.model.GeoPose
 import de.eschoenawa.urbanscanner.model.Scan
 import io.github.sceneview.ar.arcore.position
 import io.github.sceneview.ar.arcore.rotation
@@ -23,6 +26,8 @@ class FrameProcessor(private val scan: Scan) {
     private val workArrays = GrowArray(::DogArray_I8)
     private var lastDepthTimestamp = 0L
 
+    var accuracies: FloatArray? = null
+    var anchorGeoPose: GeoPose? = null
 
     fun processFrame(arFrame: Frame, earth: Earth?, anchor: Anchor): FramePointCloud? {
         val preconditionsMet = withTimer("checkPreconditions") {
@@ -45,7 +50,12 @@ class FrameProcessor(private val scan: Scan) {
                         TimingHelper.endTimer("openImages")
                         val cameraLocalPose = anchor.pose.inverse().compose(arFrame.camera.pose)
                         val frameMetaData = withTimer("generateMetaData") {
-                            FrameMetaData(scan, cameraLocalPose.position, earth)
+                            if (scan.continuousGeoReference) {
+                                FrameMetaData(scan, cameraLocalPose.position, earth)
+                            } else {
+                                val cameraGeoPose = anchorGeoPose!!.getGeoPoseWithHeadingOfLocalPose(anchor.pose, cameraLocalPose)
+                                FrameMetaData(scan, cameraLocalPose.position, cameraGeoPose, accuracies!![0], accuracies!![1], accuracies!![2])
+                            }
                         }
                         val imageData = withTimer("createImageData") {
                             FrameImageData(
@@ -89,19 +99,9 @@ class FrameProcessor(private val scan: Scan) {
         if (arFrame.camera.trackingState != TrackingState.TRACKING) {
             return false
         }
-        if (scan.isGeoReferenced) {
-            if (earth?.trackingState != TrackingState.TRACKING) {
-                return false
-            }
-            if (earth.cameraGeospatialPose.horizontalAccuracy > scan.horizontalAccuracyThreshold) {
-                return false
-            }
-            if (earth.cameraGeospatialPose.verticalAccuracy > scan.verticalAccuracyThreshold) {
-                return false
-            }
-            if (earth.cameraGeospatialPose.headingAccuracy > scan.headingAccuracyThreshold) {
-                return false
-            }
+        // Only check accuracy if continuously georeferencing
+        if (scan.isGeoReferenced && scan.continuousGeoReference) {
+            return scan.checkEarthTrackingComplianceWithThresholds(earth)
         }
         return true
     }

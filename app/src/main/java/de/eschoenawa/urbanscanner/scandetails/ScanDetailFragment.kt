@@ -61,6 +61,7 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
             val georeferenceDetailsString = if (scan.isGeoReferenced) {
                 getString(
                     R.string.scan_georeference_details,
+                    getStringForBoolean(scan.continuousGeoReference),
                     scan.horizontalAccuracyThreshold,
                     scan.verticalAccuracyThreshold,
                     scan.headingAccuracyThreshold,
@@ -79,7 +80,9 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
 
             tvScanDataDetails.text = getString(
                 R.string.scan_data_details,
-                getStringForBoolean(rawDataExists)
+                getStringForBoolean(rawDataExists),
+                scan.currentScanNumber,
+                scan.frameCount
             )
             tvScanRawPointCount.text = getString(R.string.scan_raw_point_count, scan.pointCount)
         }

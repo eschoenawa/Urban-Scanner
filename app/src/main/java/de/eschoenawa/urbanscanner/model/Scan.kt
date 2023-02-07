@@ -1,10 +1,13 @@
 package de.eschoenawa.urbanscanner.model
 
+import com.google.ar.core.Earth
+import com.google.ar.core.TrackingState
 import com.google.gson.Gson
 
 data class Scan(
     val name: String,
     val isGeoReferenced: Boolean,
+    val continuousGeoReference: Boolean,
     val horizontalAccuracyThreshold: Float,
     val verticalAccuracyThreshold: Float,
     val headingAccuracyThreshold: Float,
@@ -27,5 +30,21 @@ data class Scan(
     fun toJson(): String {
         val gson = Gson()
         return gson.toJson(this)
+    }
+
+    fun checkEarthTrackingComplianceWithThresholds(earth: Earth?): Boolean {
+        if (earth?.trackingState != TrackingState.TRACKING) {
+            return false
+        }
+        if (earth.cameraGeospatialPose.horizontalAccuracy > horizontalAccuracyThreshold) {
+            return false
+        }
+        if (earth.cameraGeospatialPose.verticalAccuracy > verticalAccuracyThreshold) {
+            return false
+        }
+        if (earth.cameraGeospatialPose.headingAccuracy > headingAccuracyThreshold) {
+            return false
+        }
+        return true
     }
 }
