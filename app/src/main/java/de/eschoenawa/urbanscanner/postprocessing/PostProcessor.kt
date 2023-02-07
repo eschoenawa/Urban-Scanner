@@ -61,3 +61,13 @@ object UtmPostProcessorInfo : PostProcessorInfo() {
         return scan.isGeoReferenced && scan.pointCount > 0
     }
 }
+
+object KmlCameraPathPostProcessorInfo : PostProcessorInfo() {
+    override val identifier = "kml_cam"
+    override val name = R.string.kml_cam_path_post_processor
+    override val factory = ::KmlCameraPathPostProcessor
+    override fun isApplicable(scan: Scan): Boolean {
+        return scan.isGeoReferenced && scan.pointCount > 0
+    }
+
+}

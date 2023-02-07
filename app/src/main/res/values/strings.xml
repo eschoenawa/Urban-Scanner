@@ -38,6 +38,7 @@
     <string name="error_invalid_points_per_frame">Provide a valid number of points per frame!</string>
     <string name="error_invalid_depth_limit">Provide a valid depth limit between 0 and 65!</string>
     <string name="utm_post_processor">To UTM coordinates</string>
+    <string name="kml_cam_path_post_processor">Camera path to KML</string>
     <string name="utm_post_processor_config_use_custom_epsg">Use custom EPSG (true/false)</string>
     <string name="utm_post_processor_config_custom_epsg">EPSG to use (empty for auto)</string>
     <string name="utm_post_processor_config_keep_relative_dimensions">Keep relative dimensions (true/false)</string>

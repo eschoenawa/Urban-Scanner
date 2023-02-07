@@ -17,6 +17,7 @@ class ScanRepository {
         private const val FRAME_DATA_FILE = "frames.csv"
         private const val UTM_DATA_FILE = "utm.xyz"
         private const val UTM_CAM_DATA_FILE = "frames_utm.csv"
+        private const val KML_CAM_DATA_FILE = "frames.kml"
         private const val META_DATA_FILE = "meta.json"
     }
 
@@ -55,6 +56,12 @@ class ScanRepository {
         val path = getRawDataFilePath(context, scan)
         val file = File(path)
         return file.exists() && file.isFile
+    }
+
+    fun persistStringToFile(targetFilepath: String, stringToSave: String, appendToExistingFile: Boolean) {
+        FileWriter(targetFilepath, appendToExistingFile).use { fw ->
+            fw.write(stringToSave)
+        }
     }
 
     fun persistRawData(context: Context, scan: Scan, framePointCloud: FramePointCloud) {
@@ -101,10 +108,11 @@ class ScanRepository {
         context: Context,
         scan: Scan,
         targetFilepath: String,
+        appendToExistingFile: Boolean,
         process: suspend (String) -> String
     ) {
         val frameMetaDataFilename = getFrameDataFilePath(context, scan)
-        FileWriter(targetFilepath).use { fw ->
+        FileWriter(targetFilepath, appendToExistingFile).use { fw ->
             File(frameMetaDataFilename).useLines { lines ->
                 lines.forEach { line ->
                     if (line.isNotBlank()) {
@@ -122,6 +130,10 @@ class ScanRepository {
 
     fun getUtmCamDataFilePath(context: Context, scan: Scan): String {
         return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$UTM_CAM_DATA_FILE"
+    }
+
+    fun getKmlCamDataFilePath(context: Context, scan: Scan): String {
+        return "${context.getExternalFilesDir(null)?.absolutePath}/${scan.name}/$KML_CAM_DATA_FILE"
     }
 
     fun getFramesMetadata(context: Context, scan: Scan): List<FrameMetaData> {

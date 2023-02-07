@@ -45,7 +45,8 @@ class UtmPostProcessor : PostProcessor {
         scanRepository.processFrameMetadata(
             context,
             scan,
-            scanRepository.getUtmCamDataFilePath(context, scan)
+            scanRepository.getUtmCamDataFilePath(context, scan),
+            false
         ) {frameMetaDataString ->
             val frameMetaData = FrameMetaData.fromCsvString(frameMetaDataString)
             if (!frameMetaData.isGeoReferenced) throw IllegalArgumentException("Data not georeferenced!")
