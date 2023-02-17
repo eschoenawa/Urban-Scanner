@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import com.google.ar.core.Anchor
+import com.google.ar.core.Camera
 import com.google.ar.core.Config
 import com.google.ar.core.Earth
 import de.eschoenawa.urbanscanner.R
@@ -87,7 +88,7 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
             TimingHelper.withTimer("updateGeoUI") {
                 updateGeospatialStatusText(earth)
             }
-            createAnchorIfApplicable(earth)
+            createAnchorIfApplicable(earth, frame.camera)
 
             geoAnchor?.let { anchor ->
                 frameProcessor.processFrame(frame.frame, earth, anchor)
@@ -116,36 +117,19 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
         }
     }
 
-    private fun createAnchorIfApplicable(earth: Earth?) {
+    private fun createAnchorIfApplicable(earth: Earth?, camera: Camera) {
         if (shouldCreateAnchor && earth != null) {
-            if (!scan.checkEarthTrackingComplianceWithThresholds(earth)) {
+            if (!scan.isGeoReferenced) {
+                geoAnchor = binding.sceneView.arSession!!.createAnchor(camera.pose)
+            } else if (!scan.checkEarthTrackingComplianceWithThresholds(earth)) {
                 //TODO string ref
                 Toast.makeText(requireContext(), "Not accurate enough!", Toast.LENGTH_SHORT).show()
                 shouldCreateAnchor = false
                 return
-            }
-            val cameraPose = earth.cameraGeospatialPose
-            geoAnchor = if (scan.continuousGeoReference) {
-                earth.createAnchor(
-                    cameraPose.latitude,
-                    cameraPose.longitude,
-                    cameraPose.altitude,
-                    0f,
-                    0f,
-                    0f,
-                    1f
-                )
             } else {
-                frameProcessor.anchorGeoPose =
-                    earth.cameraGeospatialPose.toGeoPoseWithoutHeading()
-                frameProcessor.accuracies = floatArrayOf(
-                    earth.cameraGeospatialPose.horizontalAccuracy.toFloat(),
-                    earth.cameraGeospatialPose.verticalAccuracy.toFloat(),
-                    earth.cameraGeospatialPose.headingAccuracy.toFloat()
-                )
-                // Create normal anchor (doesn't update position when camera geopose updates)
-                binding.sceneView.arSession!!.createAnchor(
-                    earth.getPose(
+                val cameraPose = earth.cameraGeospatialPose
+                geoAnchor = if (scan.continuousGeoReference) {
+                    earth.createAnchor(
                         cameraPose.latitude,
                         cameraPose.longitude,
                         cameraPose.altitude,
@@ -154,7 +138,27 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
                         0f,
                         1f
                     )
-                )
+                } else {
+                    frameProcessor.anchorGeoPose =
+                        earth.cameraGeospatialPose.toGeoPoseWithoutHeading()
+                    frameProcessor.accuracies = floatArrayOf(
+                        earth.cameraGeospatialPose.horizontalAccuracy.toFloat(),
+                        earth.cameraGeospatialPose.verticalAccuracy.toFloat(),
+                        earth.cameraGeospatialPose.headingAccuracy.toFloat()
+                    )
+                    // Create normal anchor (doesn't update position when camera geopose updates)
+                    binding.sceneView.arSession!!.createAnchor(
+                        earth.getPose(
+                            cameraPose.latitude,
+                            cameraPose.longitude,
+                            cameraPose.altitude,
+                            0f,
+                            0f,
+                            0f,
+                            1f
+                        )
+                    )
+                }
             }
             shouldCreateAnchor = false
             binding.scanFab.setImageResource(R.drawable.ic_start_record)
