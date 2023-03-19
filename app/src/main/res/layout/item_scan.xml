@@ -19,6 +19,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Scan name" />
 
-    <!-- TODO status icons? Expand? -->
-
 </androidx.constraintlayout.widget.ConstraintLayout>

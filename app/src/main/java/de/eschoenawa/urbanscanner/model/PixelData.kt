@@ -18,7 +18,6 @@ data class PixelData(
     companion object {
         fun fromString(source: String): PixelData {
             val components = source.split(",")
-            //TODO validate back and forth confidence doesn't loose accuracy
             return when (components.size) {
                 8 -> {
                     PixelData(

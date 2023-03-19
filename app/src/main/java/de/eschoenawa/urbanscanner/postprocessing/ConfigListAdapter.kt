@@ -8,6 +8,7 @@ import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.ItemConfigBinding
 
 class ConfigListAdapter(
@@ -32,9 +33,13 @@ class ConfigListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(config: PostProcessingConfig) {
             with(binding) {
-                tvName.text = binding.root.context.getString(config.name)
-                //TODO res string
-                editValue.hint = if (config.required) "Required" else "Optional"
+                tvName.text = root.context.getString(config.name)
+                editValue.hint =
+                    if (config.required) {
+                        root.context.getString(R.string.required)
+                    } else {
+                        root.context.getString(R.string.optional)
+                    }
                 editValue.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 

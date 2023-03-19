@@ -21,7 +21,6 @@ import io.github.sceneview.ar.arcore.LightEstimationMode
 
 class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
 
-    //TODO in fragment?
     private var recording = false
 
     private lateinit var frameProcessor: FrameProcessor
@@ -100,7 +99,6 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
     }
 
     private fun updateGeospatialStatusText(earth: Earth?) {
-        //TODO verify visibility works for non-continuous (invisible after anchor place)
         if (scan.isGeoReferenced && scan.continuousGeoReference || (scan.isGeoReferenced && geoAnchor == null)) {
             binding.geospatialStatusView.update(earth)
         } else {
@@ -122,8 +120,7 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
             if (!scan.isGeoReferenced) {
                 geoAnchor = binding.sceneView.arSession!!.createAnchor(camera.pose)
             } else if (!scan.checkEarthTrackingComplianceWithThresholds(earth)) {
-                //TODO string ref
-                Toast.makeText(requireContext(), "Not accurate enough!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.not_accurate_enough), Toast.LENGTH_SHORT).show()
                 shouldCreateAnchor = false
                 return
             } else {
@@ -177,7 +174,6 @@ class ArScanFragment : BaseFragment<FragmentArScanBinding>() {
 
     private fun updateUIAfterProcessing(pointCloud: FramePointCloud?) {
         if (pointCloud != null) {
-            //TODO use string template
             binding.tvScanStatus.text = TimingHelper.getTimerInfo()
         }
         TimingHelper.reset()

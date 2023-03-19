@@ -43,4 +43,8 @@
     <string name="utm_post_processor_config_custom_epsg">EPSG to use (empty for auto)</string>
     <string name="utm_post_processor_config_keep_relative_dimensions">Keep relative dimensions (true/false)</string>
     <string name="utm_post_processor_config_add_frame_metadata">Add frame metadata (true/false)</string>
+    <string name="required">Required</string>
+    <string name="optional">Optional</string>
+    <string name="processing">Processing…</string>
+    <string name="not_accurate_enough">Not accurate enough!</string>
 </resources>

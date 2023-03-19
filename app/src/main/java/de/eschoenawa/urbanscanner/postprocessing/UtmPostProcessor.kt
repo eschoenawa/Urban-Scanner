@@ -59,7 +59,6 @@ class UtmPostProcessor : PostProcessor {
                     cameraGeoPose.longitude
                 )
 
-                //TODO string template?
                 emit(
                     Progress(
                         "CameraPoints: ${index++}/${framesMetaData.size}",
@@ -78,7 +77,7 @@ class UtmPostProcessor : PostProcessor {
         ) { pixelDataString ->
             val pixelData = PixelData.fromString(pixelDataString)
             val frameMetaData = framesMetaData[pixelData.frame]
-            // TODO alternative approach: convert cam pose to UTM and use UTM for offsets
+            // alternative approach: convert cam pose to UTM and use UTM for offsets
             val pixelGeoPose =
                 pixelData.getGeoPose(frameMetaData.cameraPosition, frameMetaData.cameraGeoPose!!)
             val newCoordinates = utmCoordinateConverter!!.getUtmCoordinates(
@@ -88,7 +87,6 @@ class UtmPostProcessor : PostProcessor {
             val distanceCameraToPoint =
                 (pixelData.position - frameMetaData.cameraPosition).toVector3().length()
             pointsProcessed++
-            //TODO string template?
             emit(
                 Progress(
                     "$pointsProcessed/${scan.pointCount}",

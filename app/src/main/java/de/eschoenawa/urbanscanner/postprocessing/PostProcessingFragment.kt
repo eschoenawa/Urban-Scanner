@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.databinding.FragmentPostProcessingBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.model.Scan
@@ -18,7 +19,6 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
     private lateinit var scan: Scan
     private lateinit var processor: PostProcessor
 
-    //TODO viewmodel?
     private val configMap = emptyMap<PostProcessingConfig, String>().toMutableMap()
     private val scanRepository = DependencyProvider.getScanRepository()
 
@@ -37,7 +37,6 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO show something when no config available?
         scan = scanRepository.getScan(requireContext(), scanName)
         processor = PostProcessorRegistry.getProcessor(processName)
             ?: throw IllegalArgumentException("Unknown process '$processName'!")
@@ -54,9 +53,8 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
 
     private fun onStartProcess() {
         with(binding) {
-            //TODO abort button?
             btnProcess.isEnabled = false
-            //TODO display some other info?
+            btnProcess.text = getString(R.string.processing)
             rvConfigList.isVisible = false
         }
         processor.configure(configMap)
