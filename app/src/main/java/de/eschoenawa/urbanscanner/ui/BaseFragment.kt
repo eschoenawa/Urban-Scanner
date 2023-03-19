@@ -14,9 +14,19 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
     val binding get() = _binding!!
 
     @Suppress("UNCHECKED_CAST")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val clazz = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
-        val method = clazz.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val clazz =
+            (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
+        val method = clazz.getMethod(
+            "inflate",
+            LayoutInflater::class.java,
+            ViewGroup::class.java,
+            Boolean::class.java
+        )
         _binding = method.invoke(null, layoutInflater, container, false) as T
         return binding.root
     }

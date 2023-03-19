@@ -47,5 +47,6 @@ data class PixelData(
         }
     }
 
-    val stringRepresentation = "$x,$y,$z,$normalizedConfidence,${r.toInt()},${g.toInt()},${b.toInt()},$frame"
+    val stringRepresentation =
+        "$x,$y,$z,$normalizedConfidence,${r.toInt()},${g.toInt()},${b.toInt()},$frame"
 }

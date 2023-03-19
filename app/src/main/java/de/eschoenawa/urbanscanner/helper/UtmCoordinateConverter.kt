@@ -20,7 +20,6 @@ class UtmCoordinateConverter(val targetEpsgCode: String) {
     private val coordinateOperation: CoordinateOperation
 
     companion object {
-        private const val TAG = "UTMConv"
         private const val WGS84_EPSG_CODE = "EPSG:4326"
 
         fun fromLatLong(latitude: Float, longitude: Float): UtmCoordinateConverter {
@@ -38,7 +37,6 @@ class UtmCoordinateConverter(val targetEpsgCode: String) {
         coordinateOperationCandidates = CoordinateOperationFactory.createCoordinateOperations(
             sourceCrs as GeodeticCRS, targetCrs as GeodeticCRS
         )
-        val totalOperations = coordinateOperationCandidates.size
         coordinateOperationCandidates = CoordinateOperationFactory.excludeFilter(
             coordinateOperationCandidates,
             FrenchGeocentricNTF2RGF::class.java

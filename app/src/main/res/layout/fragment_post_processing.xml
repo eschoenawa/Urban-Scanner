@@ -12,17 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/progress_bar"
-        tools:listitem="@layout/item_config"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_config" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         app:layout_constraintBottom_toTopOf="@id/tv_progress"
-        tools:progress="25"/>
+        tools:progress="25" />
 
     <TextView
         android:id="@+id/tv_progress"
@@ -30,14 +30,14 @@
         android:layout_height="wrap_content"
         android:text="Ready for processing"
         app:layout_constraintBottom_toTopOf="@id/btn_process"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_process"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start Processing"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

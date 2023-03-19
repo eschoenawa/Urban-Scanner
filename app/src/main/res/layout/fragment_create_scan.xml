@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".createscan.CreateScanFragment"
     tools:ignore="LabelFor,Autofill">
 
@@ -12,180 +12,180 @@
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_scan_name"
         android:paddingVertical="16dp"
+        android:text="@string/label_scan_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="text"
-        app:layout_constraintTop_toTopOf="@id/tv_name"
-        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintBottom_toBottomOf="@id/tv_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_name" />
+        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintTop_toTopOf="@id/tv_name" />
 
     <TextView
         android:id="@+id/tv_georeference"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_georeference"
         android:paddingVertical="16dp"
+        android:text="@string/label_georeference"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_name"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
     <CheckBox
         android:id="@+id/checkbox_georeference"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/tv_georeference"
+        app:layout_constraintBottom_toBottomOf="@id/tv_georeference"
         app:layout_constraintStart_toEndOf="@id/tv_georeference"
-        app:layout_constraintBottom_toBottomOf="@id/tv_georeference"/>
+        app:layout_constraintTop_toTopOf="@id/tv_georeference" />
 
     <TextView
         android:id="@+id/tv_continuous_georeference"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_continuous_georeference"
         android:paddingVertical="16dp"
         android:paddingStart="8dp"
+        android:text="@string/label_continuous_georeference"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_georeference"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_georeference" />
 
     <CheckBox
         android:id="@+id/checkbox_continuous_georeference"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/tv_continuous_georeference"
+        app:layout_constraintBottom_toBottomOf="@id/tv_continuous_georeference"
         app:layout_constraintStart_toEndOf="@id/tv_continuous_georeference"
-        app:layout_constraintBottom_toBottomOf="@id/tv_continuous_georeference"/>
+        app:layout_constraintTop_toTopOf="@id/tv_continuous_georeference" />
 
     <TextView
         android:id="@+id/tv_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_horizontal_accuracy"
         android:paddingVertical="16dp"
         android:paddingStart="8dp"
+        android:text="@string/label_horizontal_accuracy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_continuous_georeference"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_continuous_georeference" />
 
     <EditText
         android:id="@+id/edit_horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="@id/tv_horizontal"
-        app:layout_constraintStart_toEndOf="@id/tv_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/tv_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_horizontal"/>
+        app:layout_constraintStart_toEndOf="@id/tv_horizontal"
+        app:layout_constraintTop_toTopOf="@id/tv_horizontal" />
 
     <TextView
         android:id="@+id/tv_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_vertical_accuracy"
         android:paddingVertical="16dp"
         android:paddingStart="8dp"
+        android:text="@string/label_vertical_accuracy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_horizontal"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_horizontal" />
 
     <EditText
         android:id="@+id/edit_vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="@id/tv_vertical"
-        app:layout_constraintStart_toEndOf="@id/tv_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/tv_vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_vertical"/>
+        app:layout_constraintStart_toEndOf="@id/tv_vertical"
+        app:layout_constraintTop_toTopOf="@id/tv_vertical" />
 
     <TextView
         android:id="@+id/tv_heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_heading_accuracy"
         android:paddingVertical="16dp"
         android:paddingStart="8dp"
+        android:text="@string/label_heading_accuracy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_vertical"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_vertical" />
 
     <EditText
         android:id="@+id/edit_heading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="@id/tv_heading"
-        app:layout_constraintStart_toEndOf="@id/tv_heading"
+        app:layout_constraintBottom_toBottomOf="@id/tv_heading"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_heading"/>
+        app:layout_constraintStart_toEndOf="@id/tv_heading"
+        app:layout_constraintTop_toTopOf="@id/tv_heading" />
 
     <TextView
         android:id="@+id/tv_confidence_cutoff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_confidence_cutoff"
         android:paddingVertical="16dp"
+        android:text="@string/label_confidence_cutoff"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_heading"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_heading" />
 
     <EditText
         android:id="@+id/edit_confidence_cutoff"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="@id/tv_confidence_cutoff"
-        app:layout_constraintStart_toEndOf="@id/tv_confidence_cutoff"
+        app:layout_constraintBottom_toBottomOf="@id/tv_confidence_cutoff"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_confidence_cutoff"/>
+        app:layout_constraintStart_toEndOf="@id/tv_confidence_cutoff"
+        app:layout_constraintTop_toTopOf="@id/tv_confidence_cutoff" />
 
     <TextView
         android:id="@+id/tv_max_points_per_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_max_points_per_frame"
         android:paddingVertical="16dp"
+        android:text="@string/label_max_points_per_frame"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_confidence_cutoff"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_confidence_cutoff" />
 
     <EditText
         android:id="@+id/edit_max_points_per_frame"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="number"
-        app:layout_constraintTop_toTopOf="@id/tv_max_points_per_frame"
-        app:layout_constraintStart_toEndOf="@id/tv_max_points_per_frame"
+        app:layout_constraintBottom_toBottomOf="@id/tv_max_points_per_frame"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_max_points_per_frame"/>
+        app:layout_constraintStart_toEndOf="@id/tv_max_points_per_frame"
+        app:layout_constraintTop_toTopOf="@id/tv_max_points_per_frame" />
 
     <TextView
         android:id="@+id/tv_depth_limit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_depth_limit_meter"
         android:paddingVertical="16dp"
+        android:text="@string/label_depth_limit_meter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_max_points_per_frame"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_max_points_per_frame" />
 
     <EditText
         android:id="@+id/edit_depth_limit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="@id/tv_depth_limit"
-        app:layout_constraintStart_toEndOf="@id/tv_depth_limit"
+        app:layout_constraintBottom_toBottomOf="@id/tv_depth_limit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_depth_limit"/>
+        app:layout_constraintStart_toEndOf="@id/tv_depth_limit"
+        app:layout_constraintTop_toTopOf="@id/tv_depth_limit" />
 
     <TextView
         android:id="@+id/tv_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/error"
-        android:paddingVertical="16dp"
         android:gravity="center"
+        android:paddingVertical="16dp"
+        android:textColor="@color/error"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_depth_limit"
         tools:text="Please enter a name!" />
@@ -195,6 +195,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_create_scan"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

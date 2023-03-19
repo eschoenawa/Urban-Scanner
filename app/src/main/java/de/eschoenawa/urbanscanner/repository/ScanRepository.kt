@@ -58,7 +58,11 @@ class ScanRepository {
         return file.exists() && file.isFile
     }
 
-    fun persistStringToFile(targetFilepath: String, stringToSave: String, appendToExistingFile: Boolean) {
+    fun persistStringToFile(
+        targetFilepath: String,
+        stringToSave: String,
+        appendToExistingFile: Boolean
+    ) {
         FileWriter(targetFilepath, appendToExistingFile).use { fw ->
             fw.write(stringToSave)
         }

@@ -15,20 +15,30 @@ data class DepthCameraIntrinsics(
     private val modelMatrix = FloatArray(16)
 
     companion object {
-        fun scaleTextureIntrinsicsToDepthImageDimensions(cameraTextureIntrinsics: CameraIntrinsics, depthImage: Image): DepthCameraIntrinsics {
+        fun scaleTextureIntrinsicsToDepthImageDimensions(
+            cameraTextureIntrinsics: CameraIntrinsics,
+            depthImage: Image
+        ): DepthCameraIntrinsics {
             val intrinsicDimensions = cameraTextureIntrinsics.imageDimensions
             val depthWidth = depthImage.width
             val depthHeight = depthImage.height
             val fx = cameraTextureIntrinsics.focalLength[0] * depthWidth / intrinsicDimensions[0]
             val fy = cameraTextureIntrinsics.focalLength[1] * depthHeight / intrinsicDimensions[1]
             val cx = cameraTextureIntrinsics.principalPoint[0] * depthWidth / intrinsicDimensions[0]
-            val cy = cameraTextureIntrinsics.principalPoint[1] * depthHeight / intrinsicDimensions[1]
+            val cy =
+                cameraTextureIntrinsics.principalPoint[1] * depthHeight / intrinsicDimensions[1]
             return DepthCameraIntrinsics(fx, fy, cx, cy)
         }
     }
 
-    fun calculateWorldPointFromPixelsWithDepth(worldPoint: FloatArray, cameraPose: Pose, x: Int, y: Int, depthMeters: Float) {
-        cameraPoint[0] = depthMeters * (x -  cx) / fx
+    fun calculateWorldPointFromPixelsWithDepth(
+        worldPoint: FloatArray,
+        cameraPose: Pose,
+        x: Int,
+        y: Int,
+        depthMeters: Float
+    ) {
+        cameraPoint[0] = depthMeters * (x - cx) / fx
         cameraPoint[1] = depthMeters * (cy - y) / fy
         cameraPoint[2] = -depthMeters
         cameraPoint[3] = 1f

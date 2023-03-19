@@ -15,7 +15,7 @@
     <string name="scan_georeference_details">\n\tContinuous: %s\n\tHorizontal accuracy: %.2fm\n\tVertical accuracy: %.2fm\n\tHeading accuracy: %.1f°\n\tEPSG-Code: %s</string>
     <string name="scan_data_details">Scan started: %s\nNext scan ID: %d\nNext frame ID: %d</string>
     <string name="scan_raw_point_count">Raw scan point count: %d</string>
-    <string name="auto_epsg">(Auto)</string>
+    <string name="empty_epsg">[Not yet set]</string>
     <string name="delete_title">Delete %s?</string>
     <string name="delete_message">Do you want to delete the scan %s?</string>
     <string name="delete_action">Delete</string>

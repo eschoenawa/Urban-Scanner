@@ -44,7 +44,8 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
 
     private fun initButtons() {
         with(binding.btnScan) {
-            isEnabled = scan.isGeoReferenced || !scanRepository.doesScanHaveRawData(requireContext(), scan)
+            isEnabled =
+                scan.isGeoReferenced || !scanRepository.doesScanHaveRawData(requireContext(), scan)
             setOnClickListener {
                 findNavController().navigate(
                     ScanDetailFragmentDirections.actionScanDetailFragmentToArScanFragment(
@@ -65,7 +66,7 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
                     scan.horizontalAccuracyThreshold,
                     scan.verticalAccuracyThreshold,
                     scan.headingAccuracyThreshold,
-                    scan.epsgCode.ifEmpty { getString(R.string.auto_epsg) }
+                    scan.epsgCode.ifEmpty { getString(R.string.empty_epsg) }
                 )
             } else ""
             tvScanDetails.text = getString(
@@ -95,7 +96,12 @@ class ScanDetailFragment : BaseFragment<FragmentScanDetailBinding>() {
     }
 
     private fun onPostProcessorClicked(postProcessorInfo: PostProcessorInfo) {
-        findNavController().navigate(ScanDetailFragmentDirections.actionScanDetailFragmentToPostProcessingFragment(scanName, postProcessorInfo.identifier))
+        findNavController().navigate(
+            ScanDetailFragmentDirections.actionScanDetailFragmentToPostProcessingFragment(
+                scanName,
+                postProcessorInfo.identifier
+            )
+        )
     }
 
     private fun getStringForBoolean(value: Boolean): String {

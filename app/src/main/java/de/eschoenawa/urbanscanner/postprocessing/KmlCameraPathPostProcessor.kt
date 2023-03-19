@@ -1,7 +1,6 @@
 package de.eschoenawa.urbanscanner.postprocessing
 
 import android.content.Context
-import de.eschoenawa.urbanscanner.R
 import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.Scan
 import de.eschoenawa.urbanscanner.repository.ScanRepository
@@ -9,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class KmlCameraPathPostProcessor: PostProcessor {
+class KmlCameraPathPostProcessor : PostProcessor {
 
     private companion object {
         private const val LINE_WIDTH = 3
@@ -76,10 +75,6 @@ class KmlCameraPathPostProcessor: PostProcessor {
         """.trimIndent()
     }
 
-    override fun getName(): Int {
-        return R.string.kml_cam_path_post_processor
-    }
-
     override fun process(
         context: Context,
         scan: Scan,
@@ -105,7 +100,7 @@ class KmlCameraPathPostProcessor: PostProcessor {
             scan,
             kmlFilePath,
             true
-        ) {frameMetaDataString ->
+        ) { frameMetaDataString ->
             val frameMetaData = FrameMetaData.fromCsvString(frameMetaDataString)
             if (!frameMetaData.isGeoReferenced) throw IllegalArgumentException("Data not georeferenced!")
             frameMetaData.cameraGeoPose!!.let { cameraGeoPose ->
@@ -116,7 +111,7 @@ class KmlCameraPathPostProcessor: PostProcessor {
                         append(SCAN_HEADER_A)
                         append("Scan $currentScanId")
                         append(SCAN_HEADER_B)
-                        append("#style${kotlin.math.min(currentScanId, 5)}")
+                        append("#style${currentScanId.mod(6)}")
                         append(SCAN_HEADER_C)
                     }
                     appendLine("${cameraGeoPose.longitude},${cameraGeoPose.latitude},${cameraGeoPose.altitude}")

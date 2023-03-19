@@ -36,7 +36,11 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
             if (checkValues()) {
                 val scan = createScan()
                 scanRepository.persistScan(requireContext(), scan)
-                findNavController().navigate(CreateScanFragmentDirections.actionCreateScanFragmentToScanDetailFragment(scan.name))
+                findNavController().navigate(
+                    CreateScanFragmentDirections.actionCreateScanFragmentToScanDetailFragment(
+                        scan.name
+                    )
+                )
             }
         }
     }
@@ -81,7 +85,6 @@ class CreateScanFragment : BaseFragment<FragmentCreateScanBinding>() {
     }
 
     private fun createScan(): Scan {
-        //TODO provide selection of EPSG?
         with(binding) {
             return Scan(
                 name = editName.text.toString().trim(),

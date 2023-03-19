@@ -20,15 +20,17 @@ fun PixelData.getGeoPose(cameraPosition: Float3, cameraGeoPose: GeoPose): GeoPos
     return cameraGeoPose.getGeoPoseWithoutHeadingOfLocalPosition(cameraPosition, position)
 }
 
-fun GeoPose.getGeoPoseWithoutHeadingOfLocalPosition(geoPoseLocalPosition: Float3, targetLocalPosition: Float3): GeoPose {
+fun GeoPose.getGeoPoseWithoutHeadingOfLocalPosition(
+    geoPoseLocalPosition: Float3,
+    targetLocalPosition: Float3
+): GeoPose {
     // Points are given in EUS coordinate system (East-Up-South)
     val offset = targetLocalPosition - geoPoseLocalPosition
-    //TODO -z here? (1)
     val latOffsetRadians = -offset.z / EARTH_RADIUS
     val longOffsetRadians = offset.x / (EARTH_RADIUS * cos(this.latitudeRad))
     val resultLatDeg = toDegrees(this.latitudeRad + latOffsetRadians)
     val resultLongDeg = toDegrees(this.longitudeRad + longOffsetRadians)
-    val pointAltitude = this.altitude + (targetLocalPosition.y - geoPoseLocalPosition.y)
+    val pointAltitude = this.altitude + offset.y
     return GeoPose(
         resultLatDeg,
         resultLongDeg,
@@ -36,11 +38,21 @@ fun GeoPose.getGeoPoseWithoutHeadingOfLocalPosition(geoPoseLocalPosition: Float3
     )
 }
 
-fun GeoPose.getGeoPoseWithHeadingOfLocalPose(geoPoseLocalPose: Pose, targetLocalPose: Pose): GeoPose {
-    val withoutHeading = getGeoPoseWithoutHeadingOfLocalPosition(geoPoseLocalPose.position, targetLocalPose.position)
-    //TODO -z here? (2)
+fun GeoPose.getGeoPoseWithHeadingOfLocalPose(
+    geoPoseLocalPose: Pose,
+    targetLocalPose: Pose
+): GeoPose {
+    val withoutHeading =
+        getGeoPoseWithoutHeadingOfLocalPosition(geoPoseLocalPose.position, targetLocalPose.position)
     val northAxis = -geoPoseLocalPose.zDirection
-    val heading = toDegrees(atan2(dot(cross(targetLocalPose.zDirection, northAxis), geoPoseLocalPose.yDirection), dot(northAxis, targetLocalPose.zDirection)).toDouble())
+    val heading = toDegrees(
+        atan2(
+            dot(
+                cross(targetLocalPose.zDirection, northAxis),
+                geoPoseLocalPose.yDirection
+            ), dot(northAxis, targetLocalPose.zDirection)
+        ).toDouble()
+    )
     return GeoPose(
         withoutHeading.latitude,
         withoutHeading.longitude,

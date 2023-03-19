@@ -6,7 +6,6 @@ import boofcv.android.ConvertCameraImage
 import boofcv.struct.image.GrayU8
 import boofcv.struct.image.ImageType
 import boofcv.struct.image.Planar
-import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.Coordinates2d
 import com.google.ar.core.Earth
@@ -15,7 +14,6 @@ import com.google.ar.core.Pose
 import de.eschoenawa.urbanscanner.helper.TimingHelper.withTimer
 import de.eschoenawa.urbanscanner.helper.toGeoPose
 import de.eschoenawa.urbanscanner.model.DepthCameraIntrinsics
-import de.eschoenawa.urbanscanner.model.FrameMetaData
 import de.eschoenawa.urbanscanner.model.GeoPose
 import de.eschoenawa.urbanscanner.model.PixelData
 import de.eschoenawa.urbanscanner.model.Scan

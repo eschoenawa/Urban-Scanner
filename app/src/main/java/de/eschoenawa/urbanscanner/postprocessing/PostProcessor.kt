@@ -8,8 +8,6 @@ import de.eschoenawa.urbanscanner.repository.ScanRepository
 import kotlinx.coroutines.flow.Flow
 
 interface PostProcessor {
-    @StringRes
-    fun getName(): Int
     fun process(context: Context, scan: Scan, scanRepository: ScanRepository): Flow<Progress>
     fun getConfig(): List<PostProcessingConfig>
     fun configure(configValues: Map<PostProcessingConfig, String>)

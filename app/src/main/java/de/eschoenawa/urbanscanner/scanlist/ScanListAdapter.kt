@@ -11,7 +11,7 @@ import de.eschoenawa.urbanscanner.model.Scan
 class ScanListAdapter(
     private val scanClickCallback: (Scan) -> Unit,
     private val scanLongClickCallback: (Scan) -> Unit
-): ListAdapter<Scan, ScanListAdapter.ScanViewHolder>(ScanDiffUtil()) {
+) : ListAdapter<Scan, ScanListAdapter.ScanViewHolder>(ScanDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScanViewHolder {
         return ScanViewHolder(
@@ -27,7 +27,7 @@ class ScanListAdapter(
         getItem(position)?.let { scan -> holder.bind(scan) }
     }
 
-    inner class ScanViewHolder(private val binding: ItemScanBinding): ViewHolder(binding.root) {
+    inner class ScanViewHolder(private val binding: ItemScanBinding) : ViewHolder(binding.root) {
         fun bind(scan: Scan) {
             with(binding) {
                 tvScanName.text = scan.name
@@ -42,7 +42,7 @@ class ScanListAdapter(
         }
     }
 
-    class ScanDiffUtil: ItemCallback<Scan>() {
+    class ScanDiffUtil : ItemCallback<Scan>() {
         override fun areItemsTheSame(oldItem: Scan, newItem: Scan): Boolean {
             return oldItem.name == newItem.name
         }

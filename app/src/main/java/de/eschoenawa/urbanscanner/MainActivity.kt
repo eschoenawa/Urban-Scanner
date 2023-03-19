@@ -3,10 +3,10 @@ package de.eschoenawa.urbanscanner
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import de.eschoenawa.urbanscanner.databinding.ActivityMainBinding
 import de.eschoenawa.urbanscanner.permissions.handlePermissionResult
@@ -17,7 +17,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            0
+        )
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }

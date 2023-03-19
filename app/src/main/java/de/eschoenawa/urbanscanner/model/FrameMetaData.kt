@@ -26,7 +26,14 @@ data class FrameMetaData(
         earth?.cameraGeospatialPose?.headingAccuracy?.toFloat()
     )
 
-    constructor(scan: Scan, cameraPosition: Float3, cameraGeoPose: GeoPose, horizontalAccuracy: Float, verticalAccuracy: Float, headingAccuracy: Float) : this (
+    constructor(
+        scan: Scan,
+        cameraPosition: Float3,
+        cameraGeoPose: GeoPose,
+        horizontalAccuracy: Float,
+        verticalAccuracy: Float,
+        headingAccuracy: Float
+    ) : this(
         scan.frameCount,
         scan.currentScanNumber,
         cameraPosition,

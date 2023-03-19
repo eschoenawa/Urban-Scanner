@@ -26,9 +26,13 @@ object TimingHelper {
 
     fun getTimerInfo(): String {
         val stringBuilder = StringBuilder()
-        timingsMap.entries.forEach {entry ->
+        timingsMap.entries.forEach { entry ->
             if (entry.value.isFinished) {
-                stringBuilder.appendLine("${entry.value.getTotalTime().toFourDigitString()}ms\t${entry.key}")
+                stringBuilder.appendLine(
+                    "${
+                        entry.value.getTotalTime().toFourDigitString()
+                    }ms\t${entry.key}"
+                )
             } else {
                 stringBuilder.appendLine("????ms\t${entry.key} (Not finished)")
             }
@@ -38,7 +42,7 @@ object TimingHelper {
 
     fun logTimerInfo() {
         Log.d(TAG, "### Timers ###")
-        timingsMap.entries.forEach {entry ->
+        timingsMap.entries.forEach { entry ->
             if (entry.value.isFinished) {
                 Log.d(TAG, "${entry.value.getTotalTime().toFourDigitString()}ms\t${entry.key}")
             } else {

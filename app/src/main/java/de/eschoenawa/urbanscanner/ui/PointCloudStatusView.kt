@@ -13,7 +13,7 @@ class PointCloudStatusView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-): ConstraintLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle) {
     private val binding: ViewPointCloudStatusBinding
 
     private var lastPointCloudSystemTimestamp = 0L
@@ -26,7 +26,11 @@ class PointCloudStatusView @JvmOverloads constructor(
         if (newPointsGenerated) {
             lastPointCloudSystemTimestamp = System.currentTimeMillis()
 
-            binding.tvPointCount.text = context.resources.getQuantityString(R.plurals.point_count, pointCount.toInt(), pointCount)
+            binding.tvPointCount.text = context.resources.getQuantityString(
+                R.plurals.point_count,
+                pointCount.toInt(),
+                pointCount
+            )
         }
         val delta = System.currentTimeMillis() - lastPointCloudSystemTimestamp
         with(binding) {

@@ -37,14 +37,14 @@
         <action
             android:id="@+id/action_createScanFragment_to_scanDetailFragment"
             app:destination="@id/scanDetailFragment"
-            app:popUpTo="@id/scanListFragment"/>
+            app:popUpTo="@id/scanListFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/scanDetailFragment"
         android:name="de.eschoenawa.urbanscanner.scandetails.ScanDetailFragment"
         android:label="ScanDetailFragment"
-        tools:layout="@layout/fragment_scan_detail" >
+        tools:layout="@layout/fragment_scan_detail">
         <argument
             android:name="scanName"
             app:argType="string" />
@@ -59,7 +59,7 @@
         android:id="@+id/postProcessingFragment"
         android:name="de.eschoenawa.urbanscanner.postprocessing.PostProcessingFragment"
         android:label="fragment_post_processing"
-        tools:layout="@layout/fragment_post_processing" >
+        tools:layout="@layout/fragment_post_processing">
         <argument
             android:name="scanName"
             app:argType="string" />

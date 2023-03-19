@@ -23,11 +23,6 @@ class UtmPostProcessor : PostProcessor {
     private var customEpsgCode = ""
     private var addMetadata = false
 
-
-    override fun getName(): Int {
-        return R.string.utm_post_processor
-    }
-
     override fun process(
         context: Context,
         scan: Scan,
@@ -47,7 +42,7 @@ class UtmPostProcessor : PostProcessor {
             scan,
             scanRepository.getUtmCamDataFilePath(context, scan),
             false
-        ) {frameMetaDataString ->
+        ) { frameMetaDataString ->
             val frameMetaData = FrameMetaData.fromCsvString(frameMetaDataString)
             if (!frameMetaData.isGeoReferenced) throw IllegalArgumentException("Data not georeferenced!")
             frameMetaData.cameraGeoPose!!.let { cameraGeoPose ->

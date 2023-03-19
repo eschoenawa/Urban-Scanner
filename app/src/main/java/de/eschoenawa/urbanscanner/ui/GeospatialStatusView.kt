@@ -15,7 +15,7 @@ class GeospatialStatusView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-): ConstraintLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle) {
     private val binding: ViewGeospatialStatusBinding
 
     private var horizontalAccuracyThresholds = doubleArrayOf(1.0, 3.0)
@@ -50,23 +50,33 @@ class GeospatialStatusView @JvmOverloads constructor(
     fun update(nullableEarth: Earth?) {
         nullableEarth?.let { earth ->
             val trackingStateColor = when (earth.trackingState) {
-                    TrackingState.TRACKING -> R.color.okay
-                    TrackingState.PAUSED -> R.color.warn
-                    TrackingState.STOPPED -> R.color.error
-                }
+                TrackingState.TRACKING -> R.color.okay
+                TrackingState.PAUSED -> R.color.warn
+                TrackingState.STOPPED -> R.color.error
+            }
             val horizontalColor: Int
             val verticalColor: Int
             val headingColor: Int
             with(earth.cameraGeospatialPose) {
-                horizontalColor = getColorFromThresholds(horizontalAccuracy, horizontalAccuracyThresholds)
+                horizontalColor =
+                    getColorFromThresholds(horizontalAccuracy, horizontalAccuracyThresholds)
                 verticalColor = getColorFromThresholds(verticalAccuracy, verticalAccuracyThresholds)
                 headingColor = getColorFromThresholds(headingAccuracy, headingAccuracyThresholds)
             }
             with(binding) {
-                ivEarthTrackingState.setColorFilter(ContextCompat.getColor(context, trackingStateColor))
+                ivEarthTrackingState.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        trackingStateColor
+                    )
+                )
                 tvEarthTrackingState.text = when (earth.trackingState) {
                     TrackingState.TRACKING -> earth.trackingState.toString()
-                    else -> context.getString(R.string.geospatial_unavailable_status, earth.earthState, earth.trackingState)
+                    else -> context.getString(
+                        R.string.geospatial_unavailable_status,
+                        earth.earthState,
+                        earth.trackingState
+                    )
                 }
                 ivHorizontal.setColorFilter(ContextCompat.getColor(context, horizontalColor))
                 ivVertical.setColorFilter(ContextCompat.getColor(context, verticalColor))
@@ -97,9 +107,14 @@ class GeospatialStatusView @JvmOverloads constructor(
 
     private fun setTexts(earth: Earth) {
         with(binding) {
-            tvHorizontal.text = context.getString(R.string.meter_value, earth.cameraGeospatialPose.horizontalAccuracy)
-            tvVertical.text = context.getString(R.string.meter_value, earth.cameraGeospatialPose.verticalAccuracy)
-            tvHeading.text = context.getString(R.string.degree_value, earth.cameraGeospatialPose.headingAccuracy)
+            tvHorizontal.text = context.getString(
+                R.string.meter_value,
+                earth.cameraGeospatialPose.horizontalAccuracy
+            )
+            tvVertical.text =
+                context.getString(R.string.meter_value, earth.cameraGeospatialPose.verticalAccuracy)
+            tvHeading.text =
+                context.getString(R.string.degree_value, earth.cameraGeospatialPose.headingAccuracy)
             tvLocation.text = context.getString(
                 R.string.geospatial_pose,
                 earth.cameraGeospatialPose.latitude,

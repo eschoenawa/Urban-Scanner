@@ -9,7 +9,6 @@ import de.eschoenawa.urbanscanner.databinding.FragmentPostProcessingBinding
 import de.eschoenawa.urbanscanner.helper.DependencyProvider
 import de.eschoenawa.urbanscanner.model.Scan
 import de.eschoenawa.urbanscanner.ui.BaseFragment
-import kotlinx.coroutines.flow.collect
 
 
 class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
@@ -18,6 +17,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
     private lateinit var processName: String
     private lateinit var scan: Scan
     private lateinit var processor: PostProcessor
+
     //TODO viewmodel?
     private val configMap = emptyMap<PostProcessingConfig, String>().toMutableMap()
     private val scanRepository = DependencyProvider.getScanRepository()
@@ -81,7 +81,7 @@ class PostProcessingFragment : BaseFragment<FragmentPostProcessingBinding>() {
     private fun checkConfigValues() {
         var allValuesValid = true
         configMap.entries.forEach { entry ->
-            if(!entry.key.validateValue(entry.value) || (entry.key.required && entry.value.isBlank())) {
+            if (!entry.key.validateValue(entry.value) || (entry.key.required && entry.value.isBlank())) {
                 allValuesValid = false
             }
         }
